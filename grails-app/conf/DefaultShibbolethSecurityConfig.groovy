@@ -1,5 +1,8 @@
 security {
 	shibboleth {
+		// Disabled by default
+		active = false
+
 		// Used by Controllers
 		loginUrl = '/Shibboleth.sso/Login?target={0}'
 		logoutUrl = '/Shibboleth.sso/Logout'

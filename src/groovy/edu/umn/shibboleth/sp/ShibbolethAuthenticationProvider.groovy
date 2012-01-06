@@ -1,5 +1,6 @@
 package edu.umn.shibboleth.sp
 
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
@@ -22,13 +23,15 @@ import org.springframework.util.Assert
 */
 class ShibbolethAuthenticationProvider implements AuthenticationProvider, InitializingBean {
 
+	private static final log = Logger.getLogger(this)
+
 	// injected service(s)
 	def userDetailsService
 
 	// configuration settings + default values
 	// def principalUsernameAttribute = 'EPPN'
-	String identityProviderAllowed = null
-	String authenticationMethodAllowed = null
+	Collection<String> identityProviderAllowed = null
+	Collection<String> authenticationMethodAllowed = null
 
 	// injected configuration parameters
 
@@ -36,6 +39,8 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	This attempts to authenticate an {@link Authentication} using the native Shibboleth SP
 	*/
 	Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
+		log.debug("ShibbolethAuthenticationProvider.authenticate():: invocation")
 
 		// exit if unsupported token is passed
 		if (!supports(authentication.getClass())) {

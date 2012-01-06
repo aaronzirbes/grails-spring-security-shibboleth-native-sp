@@ -1,14 +1,18 @@
 package edu.umn.shibboleth.sp
 
+import java.io.IOException
+import javax.servlet.FilterChain
+import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.FilterChain
-import org.springframework.security.core.Authentication
+import org.apache.log4j.Logger
+import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 
 
 // https://github.com/grails-plugins/grails-spring-security-core/blob/master/src/java/org/codehaus/groovy/grails/plugins/springsecurity/SecurityFilterPosition.java
@@ -18,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder
 	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
 */
 class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+	private static final log = Logger.getLogger(this)
 
 	// configuration settings + default values
 	// def principalUsernameAttribute = 'EPPN'
@@ -31,16 +37,20 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	/** The default constructor */
 	public ShibbolethAuthenticationFilter() {
 		super("/j_spring_shibboleth_native_sp_security_check")
+		log.debug "instantiation"
 	}
 
 	/** Try logging in the user via Shibboleth Native SP */
-	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		Authentication token = null
 		ShibbolethAuthenticationToken shibbolethAuthenticationToken = null
 
+		log.debug "attemptAuthentication():: invocation"
+
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
+			log.debug "attemptAuthentication():: authenticating"
 
 			// These are set by mod_shib22 in Apache and passed through mod_jk 
 			// to the servlet (Tomcat, Glassfish, etc..)

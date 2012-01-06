@@ -1,5 +1,6 @@
 package edu.umn.shibboleth.sp
 
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.Authentication
@@ -26,6 +27,9 @@ import org.springframework.security.web.util.IpAddressMatcher
 	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
 */
 class ShibbolethUserDetailsService implements UserDetailsService, AuthenticationUserDetailsService {
+
+	private static final log = LogFactory.getLog(this)
+
 	/**
 	 * This is to support the {@code RememberMeService}
 	 */
@@ -70,6 +74,7 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	 */
 	UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
 
+		log.debug("ShibbolethUserDetailsService.loadUserDetails():: invocation")
 
 		// set default values
 		def username = authentication.name

@@ -153,10 +153,6 @@ grails.plugins.springsecurity.shibboleth.development.environment = [
 	'Shib-AuthnContext-Class': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
 	'Shib-Session-ID': '_58872da8c49da55e94bf1c68c7c12745' ]
 
-grails.plugins.springsecurity.shibboleth.loginUrl = '/Shibboleth.sso/Login'
-grails.plugins.springsecurity.shibboleth.loginTargetVariable = 'target'
-
-
 // Added by the Spring Security Core plugin:
 //grails.plugins.springsecurity.userLookup.userDomainClassName = 'edu.umn.idm.User'
 //grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'edu.umn.idm.UserRole'
