@@ -30,17 +30,21 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 
 	// configuration settings + default values
 	// def principalUsernameAttribute = 'EPPN'
+	// injected configuration parameters
 	Collection<String> identityProviderAllowed = null
 	Collection<String> authenticationMethodAllowed = null
 
-	// injected configuration parameters
+	public ShibbolethAuthenticationProvider() {
+		super()
+		log.debug("instantiation")
+	}
 
 	/** 
 	This attempts to authenticate an {@link Authentication} using the native Shibboleth SP
 	*/
 	Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-		log.debug("ShibbolethAuthenticationProvider.authenticate():: invocation")
+		log.debug("authenticate():: invocation")
 
 		// exit if unsupported token is passed
 		if (!supports(authentication.getClass())) {

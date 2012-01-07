@@ -48,64 +48,64 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 		log.debug "attemptAuthentication():: invocation"
 
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+		// These are set by mod_shib22 in Apache and passed through mod_jk 
+		// to the servlet (Tomcat, Glassfish, etc..)
+		// This means you MUST trust the assertions chain made by mod_jk, and in 
+		// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
+		// This is often referred to as "pre-authentication"
+		def remoteUser = request.getRemoteUser()
+		def remoteAddress = request.getRemoteAddress()
+		def authType = request.getAuthType()
 
-			log.debug "attemptAuthentication():: authenticating"
+		// These are configurable attributes to load
+		def authenticationMethod = request.getAttribute(authenticationMethodAttribute)
+		def identityProvider = request.getAttribute(identityProviderAttribute)
+		def authenticationInstant = request.getAttribute(authenticationInstantAttribute)
+		// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
+		remoteUser = request.getAttribute(principalUsernameAttribute) ?: remoteUser
 
-			// These are set by mod_shib22 in Apache and passed through mod_jk 
-			// to the servlet (Tomcat, Glassfish, etc..)
-			// This means you MUST trust the assertions chain made by mod_jk, and in 
-			// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
-			// This is often referred to as "pre-authentication"
-			def remoteUser = request.getRemoteUser()
-			def remoteAddress = request.getRemoteAddress()
-			def authType = request.getAuthType()
+		def attributes = [:]
 
-			// These are configurable attributes to load
-			def authenticationMethod = request.getAttribute(authenticationMethodAttribute)
-			def identityProvider = request.getAttribute(identityProviderAttribute)
-			def authenticationInstant = request.getAttribute(authenticationInstantAttribute)
-			// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
-			remoteUser = request.getAttribute(principalUsernameAttribute) ?: remoteUser
+		// load any extra attributes
+		extraAttributes.each{
+			attributes[it] = request.getAttribute(it)?.toString()
+		}
 
-			def attributes = [:]
+		// This is used to make development easier to allow overwriting attributes
+		if (developmentEnvironment) {
+			log.debug "attemptAuthentication():: loading debug environment"
 
-			// load any extra attributes
+			authType				= developmentEnvironment['AUTH_TYPE'] ?: authType
+			authenticationMethod	= developmentEnvironment[authenticationMethodAttribute] ?: authenticationMethod
+			identityProvider		= developmentEnvironment[identityProviderAttribute] ?: identityProvider
+			authenticationInstant	= developmentEnvironment[authenticationInstantAttribute] ?: authenticationInstant
+			remoteUser				= developmentEnvironment[principalUsernameAttribute] ?: remoteUser
+
+			// load any defined 'extraAttributes' exposed by the IdP
 			extraAttributes.each{
-				attributes[it] = request.getAttribute(it)?.toString()
-			}
-
-			// This is used to make development easier to allow overwriting attributes
-			if (developmentEnvironment) {
-				authType				= developmentEnvironment['AUTH_TYPE'] ?: authType
-				authenticationMethod	= developmentEnvironment[authenticationMethodAttribute] ?: authenticationMethod
-				identityProvider		= developmentEnvironment[identityProviderAttribute] ?: identityProvider
-				authenticationInstant	= developmentEnvironment[authenticationInstantAttribute] ?: authenticationInstant
-				remoteUser				= developmentEnvironment[principalUsernameAttribute] ?: remoteUser
-
-				// load any defined 'extraAttributes' exposed by the IdP
-				extraAttributes.each{
-					attributes[it] = developmentEnvironment[it] ?: attributes[it]
-				}
-			}
-			
-			// INFO: authType is not configurable, as this plugin 
-			// is meant to be used with the Shibboleth Native SP that 
-			// integrates with Apache
-			if ( remoteUser && authType && authType == 'shibboleth' ) {
-
-				// create the token
-				// principal is set to remoteUser because the default string convert (toString)
-				// for the AbstractAuthenticationProcessingFilter class is principal.toString()
-
-				shibbolethAuthenticationToken = new ShibbolethAuthenticationToken(
-					remoteUser, null, eppn, null, remoteUser, false, remoteUser,
-					authType, authenticationMethod, identityProvider, authenticationInstant,
-					remoteAddress, attributes)
-
-				token = authenticationManager.authenticate(shibbolethAuthenticationToken)
-
+				attributes[it] = developmentEnvironment[it] ?: attributes[it]
 			}
 		}
+		
+		// INFO: authType is not configurable, as this plugin 
+		// is meant to be used with the Shibboleth Native SP that 
+		// integrates with Apache
+		if ( remoteUser && authType && authType == 'shibboleth' ) {
+			// create the token
+			// principal is set to remoteUser because the default string convert (toString)
+			// for the AbstractAuthenticationProcessingFilter class is principal.toString()
+
+			log.debug "attemptAuthentication():: building a shibboleth token"
+
+			shibbolethAuthenticationToken = new ShibbolethAuthenticationToken(
+				remoteUser, null, eppn, null, remoteUser, false, remoteUser,
+				authType, authenticationMethod, identityProvider, authenticationInstant,
+				remoteAddress, attributes)
+
+			log.debug "attemptAuthentication():: calling authenticate"
+			token = authenticationManager.authenticate(shibbolethAuthenticationToken)
+		}
+
+		return token
 	}
 }
