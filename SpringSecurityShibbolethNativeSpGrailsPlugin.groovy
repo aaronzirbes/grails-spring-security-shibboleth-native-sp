@@ -47,7 +47,6 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			rolesPrefix = conf.shibboleth.roles.prefix
 			authenticationMethodRoles = conf.shibboleth.authenticationMethod.roles
 			ipAddressRoles = conf.remoteaddress.roles
-			developmentRoles = conf.shibboleth.development.roles                                                           
 		}       
 
 		// shibboleth authentication provider
@@ -70,7 +69,6 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			authenticationMethodAttribute = conf.shibboleth.authenticationMethod.attribute
 			identityProviderAttribute = conf.shibboleth.identityProvider.attribute                                         
 			authenticationInstantAttribute = conf.shibboleth.authenticationInstant.attribute                               
-			developmentEnvironment = conf.shibboleth.development.environment
 			extraAttributes = conf.shibboleth.extraAttributes
 		}
 

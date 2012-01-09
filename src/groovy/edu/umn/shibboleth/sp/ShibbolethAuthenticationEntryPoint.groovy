@@ -24,6 +24,9 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	can change it if your implementation is different */
 	String loginUrl = '/Shibboleth.sso/Login?target={0}'
 
+	/** This is where we should come back to after logging in via Shiboleth */
+	private static final String securityCheckUri = "/j_spring_shibboleth_native_sp_security_check"
+
 	public void afterPropertiesSet() throws Exception {
 		Assert.hasLength(loginUrl, "loginUrl must be specified")
 	}
@@ -33,15 +36,15 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 
 		log.debug("commence():: invocation")
 
-		final String redirectUrl = createRedirectUrl(servletRequest, response)
+		final String redirectUrl = createRedirectUrl(servletRequest)
 
 		preCommence(servletRequest, response)
 
 		response.sendRedirect(redirectUrl)
 	}
 
-	private String createRedirectUrl(final HttpServletRequest request, final HttpServletResponse response) {
-		String uri = request.getRequestURI()
+	private String createRedirectUrl(final HttpServletRequest request) {
+		String uri = request.getContextPath() + this.getSecurityCheckUri()
 		String returnUrl = URLEncoder.encode(uri.toString(), "ISO-8859-1")
 		return loginUrl.replace("{0}", returnUrl)
 	}
