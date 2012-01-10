@@ -1,6 +1,5 @@
 package edu.umn.shibboleth.sp
 
-import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.Authentication
@@ -28,8 +27,6 @@ import org.springframework.security.web.util.IpAddressMatcher
 */
 class ShibbolethUserDetailsService implements UserDetailsService, AuthenticationUserDetailsService {
 
-	private static final log = LogFactory.getLog(this)
-
 	/**
 	 * This is to support the {@code RememberMeService}
 	 */
@@ -45,13 +42,23 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	private static final String DEFAULT_ROLES_SEPARATOR = "W,"
 	private static final String DEFAULT_ROLES_PREFIX = "SHIB_"
 
+	/** This is the exposed attribute that contains the user's roles */
 	String rolesAttribute = DEFAULT_ROLES_ATTRIBUTE
+	/** This is the delimiter for the roles attribute value */
 	String rolesSeparator = DEFAULT_ROLES_SEPARATOR
+	/** This is the prefix to apply to all the roles loaded from the exposed roles attribute */
 	String rolesPrefix = DEFAULT_ROLES_PREFIX
+	/** This is a map of roles to apply when specific authentication methods are used.
+	  * This is primarily used to identify guest or two-factor authentication. */
 	HashMap<String, String> authenticationMethodRoles = new HashMap<String, String>()
-	// HashMap<String, ArrayList<String>> ipAddressRoles = new HashMap<String, ArrayList<String>>()
-	def ipAddressRoles
-	ArrayList<String> developmentRoles = new ArrayList<String>()
+
+	/** 
+	 * This is a collection of map objects that contain a role, and an associated
+	 * collection of remote ip address ranges that cause the role to be applied.
+	 * This can be used to identify when two-factor authentication is needed based on
+	 * the clients network.
+	 * This configuration attribute is why this is still a Groovy class */
+	def ipAddressRoles = null
 
 
 	/**
