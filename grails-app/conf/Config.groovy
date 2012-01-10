@@ -158,3 +158,10 @@ grails.plugins.springsecurity.shibboleth.development.environment = [
 //grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'edu.umn.idm.UserRole'
 //grails.plugins.springsecurity.authority.className = 'edu.umn.idm.Role'
 
+grails.doc.title = "Grails Spring Security Shibboleth Native SP Plugin"
+//grails.doc.subtitle - The subtitle of the documentation
+grails.doc.subtitle = "Hooking spring security to the Shibboleth Native SP through Apache"
+grails.doc.authors = "Aaron J. Zirbes"
+grails.doc.license = "GPL v3"
+grails.doc.copyright = "Copyright (c) 2012 Aaron J. Zirbes"
+
