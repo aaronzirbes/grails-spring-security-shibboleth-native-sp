@@ -1,34 +1,37 @@
-package edu.umn.shibboleth.sp
+package edu.umn.shibboleth.sp;
 
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.security.authentication.AuthenticationProvider
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.AuthorityUtils
-import org.springframework.security.core.authority.GrantedAuthorityImpl
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.web.util.IpAddressMatcher
-import org.springframework.util.Assert
+import java.util.Collection;
+import java.util.List;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.util.IpAddressMatcher;
+import org.springframework.util.Assert;
+import org.apache.log4j.Logger;
 
 /**
-	An {@link AuthenticationProvider} implementation that integrates
-	with the native Shibboleth SP (Service Provider).
-
-	This <code>AuthenticationProvider</code> is capable of validating
-	{@link ShibbolethAuthenticationToken} requests which contain a 
-	principal name equal to HttpServletRequest.remoteUser
-
-	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
-*/
+ * An {@link AuthenticationProvider} implementation that integrates
+ * with the native Shibboleth SP (Service Provider).
+ * 
+ * This <code>AuthenticationProvider</code> is capable of validating
+ * {@link ShibbolethAuthenticationToken} requests which contain an
+ * eppn name equal to HttpServletRequest.remoteUser
+ * 
+ * @author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
+ */
 class ShibbolethAuthenticationProvider implements AuthenticationProvider, InitializingBean {
 
-	// injected service(s)
-	Object userDetailsService;
+	private final Logger logger = Logger.getLogger(this.getClass());
 
-	// configuration settings + default values
-	// def principalUsernameAttribute = 'EPPN'
+	// injected service(s)
+	private ShibbolethUserDetailsService userDetailsService = null;
+
 	// injected configuration parameters
 	Collection<String> identityProviderAllowed = null;
 	Collection<String> authenticationMethodAllowed = null;
@@ -41,7 +44,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	/** 
 	This attempts to authenticate an {@link Authentication} using the native Shibboleth SP
 	*/
-	Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
 		logger.debug("authenticate():: invocation");
 
@@ -51,26 +54,30 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 		}
 
 		boolean authenticationValid = false;
+
+		// cast token to a ShibbolethAuthenticationToken
+		ShibbolethAuthenticationToken shibToken = (ShibbolethAuthenticationToken) authentication;
+
 		
 		// mark the authentication as valid if all the required Shib elements are present
-		if (authentication.authenticationType.equals("shibboleth")
-				&& authentication.eppn.length() > 0
-				&& authentication.identityProvider.length() > 0
-				&& authentication.authenticationInstant.length() > 0
-				&& authentication.authenticationMethod.length() > 0) {
+		if (shibToken.getAuthenticationType().equals("shibboleth")
+				&& shibToken.getEppn().length() > 0
+				&& shibToken.getIdentityProvider().length() > 0
+				&& shibToken.getAuthenticationInstant().length() > 0
+				&& shibToken.getAuthenticationMethod().length() > 0) {
 			authenticationValid = true;
 		} else {
-			throw new BadCredentialsException("required shibboleth attributes are missing.")
+			throw new BadCredentialsException("required shibboleth attributes are missing.");
 		}
 
 		// if a restricted list of allowed identityProviders (IdP) is defined,
 		// make sure that the identityProvider used is in the whitelist
 		if (identityProviderAllowed.size() > 0) {
 			// if the white list does NOT contain the IdP used...
-			if ( ! identityProviderAllowed.contains(authentication.identityProvider) ) {
+			if ( ! identityProviderAllowed.contains(shibToken.getIdentityProvider()) ) {
 				// ...mark this as invalid.
 				authenticationValid = false;
-				throw new BadCredentialsException("identity provider: " + authentication.identityProvider + ", not allowed");
+				throw new BadCredentialsException("identity provider: " + shibToken.getIdentityProvider() + ", not allowed");
 			}
 		}
 		
@@ -78,30 +85,34 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 		// make sure that the authenticationMethod used is in the whitelist
 		if (authenticationMethodAllowed.size() > 0) {
 			// if the white list does NOT contain the method used...
-			if ( ! authenticationMethodAllowed.contains(authentication.authenticationMethod) ) {
+			if ( ! authenticationMethodAllowed.contains(shibToken.getAuthenticationMethod()) ) {
 				// ...mark this as invalid.
 				authenticationValid = false;
-				throw new BadCredentialsException("authentication method: " + authentication.authenticationMethod + ", not allowed");
+				throw new BadCredentialsException("authentication method: " + shibToken.getAuthenticationMethod() + ", not allowed");
 			}
 		}
 
 		// Return new authentication object if authenticated
 		if (authenticationValid) {
 
-			// cast token to a ShibbolethAuthenticationToken
-			ShibbolethAuthenticationToken shibToken = (ShibbolethAuthenticationToken) authentication;
+			// set default principal and authorities
+			Object principal = shibToken.getEppn();
+			Collection<GrantedAuthority> authorities = shibToken.getAuthorities();
 
 			// load user details from the authentication
-			UserDetails userDetails = userDetailsService.loadUserDetails(shibToken)
+			UserDetails userDetails = userDetailsService.loadUserDetails(shibToken);
 			if (userDetails != null) {
-		   		userDetails = authentication.eppn;
+		   		principal = userDetails;
+				authorities = userDetails.getAuthorities();
+			} else {
+		   		principal = shibToken.getEppn();
 			}
 
-			return new ShibbolethAuthenticationToken(userDetails.authorities,
-					authentication.details, userDetails, authentication.eppn, 
-					authentication.authenticationType, authentication.authenticationMethod,
-					authentication.identityProvider, authentication.authenticationInstant,
-					authentication.remoteAddress, authentication.attributes);
+			return new ShibbolethAuthenticationToken(authorities,
+					shibToken.getDetails(), principal, shibToken.getEppn(), 
+					shibToken.getAuthenticationType(), shibToken.getAuthenticationMethod(),
+					shibToken.getIdentityProvider(), shibToken.getAuthenticationInstant(),
+					shibToken.getRemoteAddress(), shibToken.getAttributes());
 
 		} else {
 			return null;
@@ -115,7 +126,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	/** Returns true if the Authentication implementation passed is supported
 	 * by the {@code ShibbolethAuthenticationProvider#authenticate} method.
 	 */
-	boolean supports(Class authentication) {
+	public boolean supports(Class authentication) {
 		return ShibbolethAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }

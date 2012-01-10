@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.Assert;
+import org.apache.log4j.Logger;
 
 /**
 	Processes a login request and redirects to shibboleth login
@@ -16,6 +17,8 @@ import org.springframework.util.Assert;
 	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
 */
 class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, InitializingBean {
+
+	private final Logger logger = Logger.getLogger(this.getClass());
 
 	/** This is the SP login URL, typically this is '/Shibboleth.sso/Login', but you 
 	can change it if your implementation is different */
@@ -25,7 +28,6 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	private static final String securityCheckUri = "/j_spring_shibboleth_native_sp_security_check";
 
 	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
 		Assert.hasLength(loginUrl, "loginUrl must be specified");
 	}
 
@@ -41,8 +43,13 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	}
 
 	private String createRedirectUrl(final HttpServletRequest request) {
-		String uri = request.getContextPath() + this.getSecurityCheckUri();
-		String returnUrl = URLEncoder.encode(uri.toString(), "ISO-8859-1");
+		String uri = request.getContextPath() + this.securityCheckUri;
+		String returnUrl = uri;
+		try {
+			returnUrl = URLEncoder.encode(uri.toString(), "ISO-8859-1");
+		} catch (java.io.UnsupportedEncodingException ex) {
+			logger.debug("unable to encode URL using ISO-8859-1");
+		}
 		return loginUrl.replace("{0}", returnUrl);
 	}
 

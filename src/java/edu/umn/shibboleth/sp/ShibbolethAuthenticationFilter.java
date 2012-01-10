@@ -1,9 +1,14 @@
 package edu.umn.shibboleth.sp;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.util.Assert;
 
 
 /**
@@ -15,9 +20,9 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 	// configuration settings + default values
 	String principalUsernameAttribute = null;
-	String authenticationMethodAttribute = 'Shib-AuthnContext-Method';
-	String identityProviderAttribute = 'Shib-Identity-Provider';
-	String authenticationInstantAttribute = 'Shib-Authentication-Instant';
+	String authenticationMethodAttribute = "Shib-AuthnContext-Method";
+	String identityProviderAttribute = "Shib-Identity-Provider";
+	String authenticationInstantAttribute = "Shib-Authentication-Instant";
 	Collection<String> extraAttributes = new ArrayList<String>();
 
 	/** The default constructor */
@@ -40,16 +45,17 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
 		// This is often referred to as "pre-authentication"
 		String remoteUser = request.getRemoteUser();
-		String remoteAddress = request.getRemoteAddress();
+		String remoteAddress = request.getRemoteAddr();
 		String authType = request.getAuthType();
 
 		// These are configurable attributes to load
-		String authenticationMethod = request.getAttribute(authenticationMethodAttribute)
-		String identityProvider = request.getAttribute(identityProviderAttribute)
-		String authenticationInstant = request.getAttribute(authenticationInstantAttribute)
+		String authenticationMethod = request.getAttribute(authenticationMethodAttribute).toString();
+		String identityProvider = request.getAttribute(identityProviderAttribute).toString();
+		String authenticationInstant = request.getAttribute(authenticationInstantAttribute).toString();
+
 		// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
 		if (request.getAttribute(principalUsernameAttribute) != null) {
-			remoteUser = request.getAttribute(principalUsernameAttribute);
+			remoteUser = request.getAttribute(principalUsernameAttribute).toString();
 		}
 
 		HashMap<String, String> attributes = new HashMap<String, String>();
@@ -58,14 +64,13 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		for (Iterator iter = extraAttributes.iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			String val = request.getAttribute(key).toString();
-				attributes.put(it, val);
-			}
+			attributes.put(key, val);
 		}
 
 		// INFO: authType is not configurable, as this plugin 
 		// is meant to be used with the Shibboleth Native SP that 
 		// integrates with Apache
-		if ( remoteUser == null) {
+		if (remoteUser == null) {
 			logger.debug("remoteUser is null.  No valid shibboleth session found.");
 		} else if ( remoteUser.length() <= 0 ) {
 			logger.debug("remoteUser is empty.  No valid shibboleth session found.");
@@ -81,7 +86,7 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 			logger.debug("building a shibboleth token");
 
 			ShibbolethAuthenticationToken shibbolethAuthenticationToken = new
-				ShibbolethAuthenticationToken(eppn, authType, authenticationMethod, 
+				ShibbolethAuthenticationToken(remoteUser, authType, authenticationMethod, 
 					identityProvider, authenticationInstant, remoteAddress, attributes);
 
 			logger.debug("calling authenticate()");

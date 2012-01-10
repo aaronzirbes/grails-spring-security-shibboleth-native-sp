@@ -1,6 +1,8 @@
 package edu.umn.shibboleth.sp;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -17,11 +19,11 @@ class ShibbolethUserDetails extends User {
 	private Map<String, String> attributes;
 
 	/** constructor for ShibbolethUserDetails */
-	ShibbolethUserDetails(String username, boolean enabled
+	public ShibbolethUserDetails(String username, boolean enabled,
 			Collection<GrantedAuthority> authorities, String eppn, 
 			Map<String, String> attributes) {
 
-		super(username, '', true, true, true, true, authorities);
+		super(username, "", true, true, true, true, authorities);
 
 		this.eppn = eppn;
 		this.attributes = attributes;

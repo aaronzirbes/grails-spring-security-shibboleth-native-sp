@@ -1,17 +1,22 @@
-package edu.umn.shibboleth.sp
+package edu.umn.shibboleth.sp;
 
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.authentication.AbstractAuthenticationToken
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Collection;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 /**
-	An {@link Authentication} object needed to load the {@link ShibbolethUserDetailsService}
-	with the native Shibboleth SP (Service Provider).
-
-	This <code>ShibbolethAuthenticationToken</code> is capable of loading an {@link Authentication}
-	from an eppn provided by the shibboleth native SP.
-
-	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
-*/
+ * An {@link Authentication} object needed to load the {@link ShibbolethUserDetailsService}
+ * with the native Shibboleth SP (Service Provider).
+ * 
+ * This <code>ShibbolethAuthenticationToken</code> is capable of loading an {@link Authentication}
+ * from an eppn provided by the shibboleth native SP.
+ * 
+ * @author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
+ */
 class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implements Serializable {
 
 
@@ -20,20 +25,20 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 	 * we give a user with no granted roles this one which gets past that restriction but
 	 * doesn't grant anything.
 	 */
-	private static final List<GrantedAuthority> DEFAULT_AUTHORITIES = AuthorityUtils.createAuthorityList("ROLE_USER")
+	private static final List<GrantedAuthority> DEFAULT_AUTHORITIES = AuthorityUtils.createAuthorityList("ROLE_USER");
 
 	// Extra token attributes for Shibboleth
 	// These are all things that need to be pulled in from the
 	// request object for processing by the ShibbolethUserDetailsService
-	private Object details
-	private Object principal
-	private String eppn
-	private String authenticationType
-	private String authenticationMethod
-	private String identityProvider
-	private String authenticationInstant
-	private String remoteAddress
-	private Map<String, String> attributes
+	private Object details;
+	private Object principal;
+	private String eppn;
+	private String authenticationType;
+	private String authenticationMethod;
+	private String identityProvider;
+	private String authenticationInstant;
+	private String remoteAddress;
+	private Map<String, String> attributes;
 
 	/** Constructor used by the authentication filter */
 	public ShibbolethAuthenticationToken(String eppn, 
@@ -90,11 +95,6 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 	/** Getter for principal */
 	public Object getPrincipal() {
 		return principal;
-	}
-
-	/** Getter for authenticated */
-	public boolean getAuthenticated() {
-		return authenticated;
 	}
 
 	/** Getter for eppn */
