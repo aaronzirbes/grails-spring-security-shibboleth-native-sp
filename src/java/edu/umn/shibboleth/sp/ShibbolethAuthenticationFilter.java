@@ -19,11 +19,23 @@ import org.springframework.util.Assert;
 class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	// configuration settings + default values
-	String principalUsernameAttribute = null;
-	String authenticationMethodAttribute = "Shib-AuthnContext-Method";
-	String identityProviderAttribute = "Shib-Identity-Provider";
-	String authenticationInstantAttribute = "Shib-Authentication-Instant";
-	Collection<String> extraAttributes = new ArrayList<String>();
+	private String principalUsernameAttribute = null;
+	private String authenticationMethodAttribute = "Shib-AuthnContext-Method";
+	private String identityProviderAttribute = "Shib-Identity-Provider";
+	private String authenticationInstantAttribute = "Shib-Authentication-Instant";
+	private Collection<String> extraAttributes = new ArrayList<String>();
+
+	/** Ensure all configuration settings are set */
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+
+		Assert.notNull(principalUsernameAttribute, "principalUsernameAttribute cannot be null");
+		Assert.notNull(authenticationMethodAttribute, "authenticationMethodAttribute cannot be null");
+		Assert.notNull(identityProviderAttribute, "identityProviderAttribute cannot be null");
+		Assert.notNull(authenticationInstantAttribute, "authenticationInstantAttribute cannot be null");
+		Assert.notNull(extraAttributes, "extraAttributes cannot be null");
+	}
 
 	/** The default constructor */
 	public ShibbolethAuthenticationFilter() {
@@ -49,19 +61,19 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		String authType = request.getAuthType();
 
 		// These are configurable attributes to load
-		String authenticationMethod = request.getAttribute(authenticationMethodAttribute).toString();
-		String identityProvider = request.getAttribute(identityProviderAttribute).toString();
-		String authenticationInstant = request.getAttribute(authenticationInstantAttribute).toString();
+		String authenticationMethod = request.getAttribute(this.authenticationMethodAttribute).toString();
+		String identityProvider = request.getAttribute(this.identityProviderAttribute).toString();
+		String authenticationInstant = request.getAttribute(this.authenticationInstantAttribute).toString();
 
 		// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
-		if (request.getAttribute(principalUsernameAttribute) != null) {
-			remoteUser = request.getAttribute(principalUsernameAttribute).toString();
+		if (request.getAttribute(this.principalUsernameAttribute) != null) {
+			remoteUser = request.getAttribute(this.principalUsernameAttribute).toString();
 		}
 
 		HashMap<String, String> attributes = new HashMap<String, String>();
 
 		// load any extra attributes
-		for (Iterator iter = extraAttributes.iterator(); iter.hasNext();) {
+		for (Iterator iter = this.extraAttributes.iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
 			String val = request.getAttribute(key).toString();
 			attributes.put(key, val);
@@ -96,15 +108,23 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		return token;
 	}
 
-	/** Ensure all configuration settings are set */
-	@Override
-	public void afterPropertiesSet() {
-		super.afterPropertiesSet();
+	public void setPrincipalUsernameAttribute(final String principalUsernameAttribute) {
+	   this.principalUsernameAttribute = principalUsernameAttribute;
+	}
 
-		Assert.notNull(principalUsernameAttribute, "principalUsernameAttribute cannot be null");
-		Assert.notNull(authenticationMethodAttribute, "authenticationMethodAttribute cannot be null");
-		Assert.notNull(identityProviderAttribute, "identityProviderAttribute cannot be null");
-		Assert.notNull(authenticationInstantAttribute, "authenticationInstantAttribute cannot be null");
-		Assert.notNull(extraAttributes, "extraAttributes cannot be null");
+	public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
+	   this.authenticationMethodAttribute = authenticationMethodAttribute;
+	}
+
+	public void setIdentityProviderAttribute(final String identityProviderAttribute) {
+	   this.identityProviderAttribute = identityProviderAttribute;
+	}
+
+	public void setAuthenticationInstantAttribute(final String authenticationInstantAttribute) {
+	   this.authenticationInstantAttribute = authenticationInstantAttribute;
+	}
+
+	public void setExtraAttributes(final Collection<String> extraAttributes) {
+	   this.extraAttributes = extraAttributes;
 	}
 }
