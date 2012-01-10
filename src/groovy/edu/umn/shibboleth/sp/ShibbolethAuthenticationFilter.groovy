@@ -1,21 +1,12 @@
 package edu.umn.shibboleth.sp
 
-import java.io.IOException
-import javax.servlet.FilterChain
-import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import org.apache.log4j.Logger
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 
 
-// https://github.com/grails-plugins/grails-spring-security-core/blob/master/src/java/org/codehaus/groovy/grails/plugins/springsecurity/SecurityFilterPosition.java
 /**
 	Processes a {@link ShibbolethAuthenticationToken}, and authenticates via Shibboleth if available.
 
