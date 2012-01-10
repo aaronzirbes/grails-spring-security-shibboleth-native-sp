@@ -35,6 +35,8 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 		conf = SpringSecurityUtils.securityConfig
 		if (!conf.shibboleth.active) { return }
 
+		println 'Configuring Spring Security Shibboleth Native SP ...'
+
 		// shibboleth authentication entry point                                                                               
 		authenticationEntryPoint(ShibbolethAuthenticationEntryPoint) {
 			loginUrl = conf.shibboleth.loginUrl
@@ -51,7 +53,7 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 
 		// shibboleth authentication provider
 		shibbolethAuthenticationProvider(ShibbolethAuthenticationProvider) {
-			userDetailsService = ref('shibbolethUserDetailsService')                                                       
+			authenticationUserDetailsService = ref('shibbolethUserDetailsService')                                                       
 			identityProviderAllowed = conf.shibboleth.identityProvider.attribute
 			authenticationMethodAllowed = conf.shibboleth.authenticationMethod.allowed                                     
 		}   
@@ -72,9 +74,9 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			extraAttributes = conf.shibboleth.extraAttributes
 		}
 
-		println 'Configuring Spring Security CAS ...'
 		SpringSecurityUtils.registerProvider 'shibbolethAuthenticationProvider'
 		SpringSecurityUtils.registerFilter 'shibbolethAuthenticationFilter', SecurityFilterPosition.CAS_FILTER
 
+		println '...finished configuring Spring Security Shibboleth Native SP'
     }
 }

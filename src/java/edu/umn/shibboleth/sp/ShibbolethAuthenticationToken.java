@@ -47,7 +47,6 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 			String remoteAddress, Map<String, String> attributes) {
 
 		super(DEFAULT_AUTHORITIES);
-		this.setAuthenticated(false);
 
 		this.details = null;
 		this.principal = eppn;
@@ -59,6 +58,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 		this.remoteAddress = remoteAddress;
 		this.attributes = attributes;
 
+		setAuthenticated(false);
 	}
 
 	/** Constructor used by the authentication provider */
@@ -69,7 +69,6 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 			String remoteAddress, Map<String, String> attributes) {
 
 		super(authorities);
-		this.setAuthenticated(true);
 
 		this.details = details;
 		this.principal = principal;
@@ -80,6 +79,13 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 		this.authenticationInstant = authenticationInstant;
 		this.remoteAddress = remoteAddress;
 		this.attributes = attributes;
+
+		setAuthenticated(true);
+	}
+
+	/** username just returns eppn */
+	public String getUsername() {
+		return eppn;
 	}
 
 	/** Getter for credentials */

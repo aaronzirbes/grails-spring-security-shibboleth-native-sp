@@ -12,6 +12,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.IpAddressMatcher;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
+import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.util.Assert;
 import org.apache.log4j.Logger;
 
@@ -29,12 +32,22 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 
 	private final Logger logger = Logger.getLogger(this.getClass());
 
-	// injected service(s)
-	private ShibbolethUserDetailsService userDetailsService = null;
+	//~ Instance fields ===================================================================================
+	
+	// Support for Shibboleth User Details Service
+	private AuthenticationUserDetailsService authenticationUserDetailsService;
+	// TODO: Support LDAP Details Service if plugin installed and configured
+	// TODO: Support Active Directory Details Service if configured
 
 	// injected configuration parameters
-	Collection<String> identityProviderAllowed = null;
-	Collection<String> authenticationMethodAllowed = null;
+	private Collection<String> identityProviderAllowed;
+	private Collection<String> authenticationMethodAllowed;
+
+	//~ Methods ===========================================================================================
+
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(authenticationUserDetailsService, "An authenticationUserDetailsService must be set");
+	}
 
 	public ShibbolethAuthenticationProvider() {
 		super();
@@ -100,7 +113,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 			Collection<GrantedAuthority> authorities = shibToken.getAuthorities();
 
 			// load user details from the authentication
-			UserDetails userDetails = userDetailsService.loadUserDetails(shibToken);
+			UserDetails userDetails = this.authenticationUserDetailsService.loadUserDetails(shibToken);
 			if (userDetails != null) {
 		   		principal = userDetails;
 				authorities = userDetails.getAuthorities();
@@ -119,15 +132,33 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 		}
 	}
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(userDetailsService, "userDetailsService must be set");
-	}
-
 	/** Returns true if the Authentication implementation passed is supported
 	 * by the {@code ShibbolethAuthenticationProvider#authenticate} method.
 	 */
-	public boolean supports(Class authentication) {
+	public boolean supports(Class<? extends Object> authentication) {
 		return ShibbolethAuthenticationToken.class.isAssignableFrom(authentication);
+	}
+
+	/**
+	 * Used to load the authorities and user details for the Shibboleth service
+	 */
+	public void setUserDetailsService(final UserDetailsService userDetailsService) {
+		this.authenticationUserDetailsService = new UserDetailsByNameServiceWrapper(userDetailsService);
+	}
+
+	/**
+	 * Used to load the authorities and user details for the Shibboleth service
+	 */
+	public void setAuthenticationUserDetailsService(final AuthenticationUserDetailsService authenticationUserDetailsService) {
+		this.authenticationUserDetailsService = authenticationUserDetailsService;
+	}
+
+	public void setIdentityProviderAllowed(final Collection<String> identityProviderAllowed) {
+		this.identityProviderAllowed = identityProviderAllowed;
+	}
+
+	public void setAuthenticationMethodAllowed(final Collection<String> authenticationMethodAllowed) {
+		this.authenticationMethodAllowed = authenticationMethodAllowed;
 	}
 }
 
