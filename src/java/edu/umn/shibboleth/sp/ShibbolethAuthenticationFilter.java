@@ -19,11 +19,11 @@ import org.springframework.util.Assert;
 class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	// configuration settings + default values
-	private String principalUsernameAttribute = null;
-	private String authenticationMethodAttribute = "Shib-AuthnContext-Method";
-	private String identityProviderAttribute = "Shib-Identity-Provider";
-	private String authenticationInstantAttribute = "Shib-Authentication-Instant";
-	private Collection<String> extraAttributes = new ArrayList<String>();
+	private final String principalUsernameAttribute;
+	private final String authenticationMethodAttribute;
+	private final String identityProviderAttribute;
+	private final String authenticationInstantAttribute;
+	private final Collection<String> extraAttributes;
 
 	/** Ensure all configuration settings are set */
 	@Override
@@ -61,6 +61,14 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		String authType = request.getAuthType();
 
 		// These are configurable attributes to load
+		/* TODO: I'm getting the following error
+		 * No thread-bound request found: Are you referring to request attributes outside 
+		 * of an actual web request, or processing a request outside of the originally 
+		 * receiving thread? If you are actually operating within a web request and still 
+		 * receive this message, your code is probably running outside of 
+		 * DispatcherServlet/DispatcherPortlet: In this case, use RequestContextListener 
+		 * or RequestContextFilter to expose the current request.
+		 */
 		String authenticationMethod = request.getAttribute(this.authenticationMethodAttribute).toString();
 		String identityProvider = request.getAttribute(this.identityProviderAttribute).toString();
 		String authenticationInstant = request.getAttribute(this.authenticationInstantAttribute).toString();
