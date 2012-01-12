@@ -1,4 +1,5 @@
-introduction: Introduction
+introduction: 
+    title: Introduction
     history: History
 preconfiguration: Pre-configuration
 installation: Installation
