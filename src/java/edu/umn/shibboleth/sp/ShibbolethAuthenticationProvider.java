@@ -36,12 +36,9 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	
 	// Support for Shibboleth User Details Service
 	private AuthenticationUserDetailsService authenticationUserDetailsService;
+	// TODO: Support DAO Details Service if configured
 	// TODO: Support LDAP Details Service if plugin installed and configured
 	// TODO: Support Active Directory Details Service if configured
-
-	// injected configuration parameters
-	private Collection<String> identityProviderAllowed;
-	private Collection<String> authenticationMethodAllowed;
 
 	//~ Methods ===========================================================================================
 
@@ -71,7 +68,22 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 		// cast token to a ShibbolethAuthenticationToken
 		ShibbolethAuthenticationToken shibToken = (ShibbolethAuthenticationToken) authentication;
 
-		
+		if (shibToken.getAuthenticationType() == null) {
+			throw new BadCredentialsException("authenticationType is null");
+		}
+		if (shibToken.getEppn() == null) {
+			throw new BadCredentialsException("eppn is null");
+		}
+		if (shibToken.getIdentityProvider() == null) {
+			throw new BadCredentialsException("identityProvider is null");
+		}
+		if (shibToken.getAuthenticationInstant() == null) {
+			throw new BadCredentialsException("authenticationInstant is null");
+		}
+		if (shibToken.getAuthenticationMethod() == null) {
+			throw new BadCredentialsException("authenticationMethod is null");
+		}
+
 		// mark the authentication as valid if all the required Shib elements are present
 		if (shibToken.getAuthenticationType().equals("shibboleth")
 				&& shibToken.getEppn().length() > 0
@@ -81,28 +93,6 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 			authenticationValid = true;
 		} else {
 			throw new BadCredentialsException("required shibboleth attributes are missing.");
-		}
-
-		// if a restricted list of allowed identityProviders (IdP) is defined,
-		// make sure that the identityProvider used is in the whitelist
-		if (identityProviderAllowed.size() > 0) {
-			// if the white list does NOT contain the IdP used...
-			if ( ! identityProviderAllowed.contains(shibToken.getIdentityProvider()) ) {
-				// ...mark this as invalid.
-				authenticationValid = false;
-				throw new BadCredentialsException("identity provider: " + shibToken.getIdentityProvider() + ", not allowed");
-			}
-		}
-		
-		// if a restricted list of allowed authentication methods is configured,
-		// make sure that the authenticationMethod used is in the whitelist
-		if (authenticationMethodAllowed.size() > 0) {
-			// if the white list does NOT contain the method used...
-			if ( ! authenticationMethodAllowed.contains(shibToken.getAuthenticationMethod()) ) {
-				// ...mark this as invalid.
-				authenticationValid = false;
-				throw new BadCredentialsException("authentication method: " + shibToken.getAuthenticationMethod() + ", not allowed");
-			}
 		}
 
 		// Return new authentication object if authenticated
@@ -152,13 +142,4 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	public void setAuthenticationUserDetailsService(final AuthenticationUserDetailsService authenticationUserDetailsService) {
 		this.authenticationUserDetailsService = authenticationUserDetailsService;
 	}
-
-	public void setIdentityProviderAllowed(final Collection<String> identityProviderAllowed) {
-		this.identityProviderAllowed = identityProviderAllowed;
-	}
-
-	public void setAuthenticationMethodAllowed(final Collection<String> authenticationMethodAllowed) {
-		this.authenticationMethodAllowed = authenticationMethodAllowed;
-	}
 }
-

@@ -111,52 +111,25 @@ grails.plugins.springsecurity.shibboleth.roles.separator = ','
 grails.plugins.springsecurity.shibboleth.roles.prefix = 'SHIB_'
 grails.plugins.springsecurity.shibboleth.extraAttributes = [ 'uid', 'Shib-Session-Index', 'Shib-Session-ID', 'Shib-AuthnContext-Class', 'Shib-Application-ID' ]
 
-grails.plugins.springsecurity.shibboleth.identityProvider.allowed = null
-// grails.plugins.springsecurity.shibboleth.identityProvider.allowed = [ 'https://idp-test.shib.umn.edu/idp/shibboleth' ]
-// grails.plugins.springsecurity.shibboleth.identityProvider.allowed = [ 'https://idp2.shib.umn.edu/idp/shibboleth', 'https://idp-test.shib.umn.edu/idp/shibboleth' ]
-
-grails.plugins.springsecurity.shibboleth.authenticationMethod.allowed = null
-// grails.plugins.springsecurity.shibboleth.authenticationMethod.allowed = [ 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified' ]
-// grails.plugins.springsecurity.shibboleth.authenticationMethod.allowed = [ 'https://www.umn.edu/shibboleth/classes/authncontext/mkey' ]
+// This maps IdPs to authentication methods to allow for security annotations
+// for securing based on originating IdP server
+grails.plugins.springsecurity.shibboleth.identityProvider.roles = [
+	'ROLE_IDP_UMN': 'https://idp2.shib.umn.edu/idp/shibboleth', 
+	'ROLE_IDP_NORTHWESTERN': 'https://fed.it.northwestern.edu/shibboleth-idp/SSO',
+	'ROLE_IDP_UMNTEST': 'https://idp-test.shib.umn.edu/idp/shibboleth' ]
 
 // This maps roles to authentication methods to allow for security annotations
 // for securing based on method
 grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = [
-	'ROLE_UMN_MKEY': 'https://www.umn.edu/shibboleth/classes/authncontext/mkey' ]
+	'ROLE_AUTH_METHOD_STANDARD': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
+	'ROLE_AUTH_METHOD_UMN_MKEY': 'https://www.umn.edu/shibboleth/classes/authncontext/mkey' ]
 // grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = null
 
 // Allow location based roles
 grails.plugins.springsecurity.remoteaddress.roles = [
-	'ROLE_UMN_CAMPUS_IP': ['160.94.0.0/16', '128.101.0.0/16', '134.84.0.0/16'], 
-	'ROLE_ENHS_HS_IP': ['160.94.224.0/25', '128.101.60.128/25', '134.84.107.192/26'] ]
-// grails.plugins.springsecurity.ipRoles = null
-
-// Authentication Timeout
-
-// The following settings can be used for simulating a shibboleth environment
-// when running in development mode
-
-// Used to create a development roles for the test environment
-grails.plugins.springsecurity.shibboleth.development.roles = [
-	'ROLE_NCS_IT' ]
-
-// Used to create a development envirornment for shibboleth secured applications
-grails.plugins.springsecurity.shibboleth.development.environment = [
-	'AUTH_TYPE': 'shibboleth',
-	'REMOTE_USER': 'ajz@umn.edu',
-	'EPPN': 'ajz@umn.edu',
-	'Shib-Application-ID': 'default',
-	'Shib-Authentication-Instant': '2011-12-06T21:27:37.423Z',
-	'Shib-Session-Index': 'c5ce9e8b65579dcc8f230feded09847f484f3328ea1478fbaab32d14254f7ed4',
-	'Shib-Authentication-Method': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
-	'Shib-Identity-Provider': 'https://idp-test.shib.umn.edu/idp/shibboleth',
-	'Shib-AuthnContext-Class': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
-	'Shib-Session-ID': '_58872da8c49da55e94bf1c68c7c12745' ]
-
-// Added by the Spring Security Core plugin:
-//grails.plugins.springsecurity.userLookup.userDomainClassName = 'edu.umn.idm.User'
-//grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'edu.umn.idm.UserRole'
-//grails.plugins.springsecurity.authority.className = 'edu.umn.idm.Role'
+	'ROLE_IP_UMN_VPN': ['134.84.0.0/23'], 
+	'ROLE_IP_UMN_CAMPUS': ['160.94.0.0/16', '128.101.0.0/16', '134.84.0.0/16'], 
+	'ROLE_IP_UMN_DEPT': ['160.94.224.0/25', '128.101.60.128/25', '134.84.107.192/26'] ]
 
 grails.doc.title = "Grails Spring Security Shibboleth Native SP Plugin"
 //grails.doc.subtitle - The subtitle of the documentation

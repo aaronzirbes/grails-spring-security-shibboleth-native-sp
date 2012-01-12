@@ -4,7 +4,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class SpringSecurityShibbolethNativeSpGrailsPlugin {
     // the plugin version
-    def version = "0.9.3"
+    def version = "0.9.5"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.7 > *"
     // the other plugins this plugin depends on
@@ -48,14 +48,13 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			rolesSeparator = conf.shibboleth.roles.separator
 			rolesPrefix = conf.shibboleth.roles.prefix
 			authenticationMethodRoles = conf.shibboleth.authenticationMethod.roles
+			identityProviderRoles = conf.shibboleth.identityProvider.roles
 			ipAddressRoles = conf.remoteaddress.roles
 		}       
 
 		// shibboleth authentication provider
 		shibbolethAuthenticationProvider(ShibbolethAuthenticationProvider) {
 			authenticationUserDetailsService = ref('shibbolethUserDetailsService')                                                       
-			identityProviderAllowed = conf.shibboleth.identityProvider.attribute
-			authenticationMethodAllowed = conf.shibboleth.authenticationMethod.allowed                                     
 		}   
 
 		// shibboleth authentication filter 

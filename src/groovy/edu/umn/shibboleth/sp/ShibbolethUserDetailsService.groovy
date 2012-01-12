@@ -51,7 +51,11 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	/** This is a map of roles to apply when specific authentication methods are used.
 	  * This is primarily used to identify guest or two-factor authentication. */
 	HashMap<String, String> authenticationMethodRoles = new HashMap<String, String>()
-
+	/** 
+	 * This is a collection of map objects that contain a role, and an associated
+	 * identity provider.
+	 * This can be used to identify the IdP that authenticated the logged in user. */
+	HashMap<String, String> identityProviderRoles = new HashMap<String, String>()
 	/** 
 	 * This is a collection of map objects that contain a role, and an associated
 	 * collection of remote ip address ranges that cause the role to be applied.
@@ -97,12 +101,6 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 		Collection<GrantedAuthorityImpl> ipAuthorities
 		Collection<GrantedAuthorityImpl> shibbolethAuthorities
 
-		// Allow roles to be manually set in development mode
-		if (developmentRoles) {
-			// Load Development roles if enabled
-			authorities.addAll(developmentRoles.collect{ new GrantedAuthorityImpl(it) })
-		}
-
 		// Load IP based roles if enabled
 		if (ipAddressRoles) {
 			ipAddressRoles.each{ role, ipList ->
@@ -117,7 +115,6 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 			}
 		}
 
-
 		// Load Shibboleth roles if enabled
 		if (rolesAttribute && rolesSeparator && rolesPrefix) {
 			def rolesString =  authentication.attributes[rolesAttribute]
@@ -128,6 +125,17 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 
 			// add the new shibboleth authorities to the authorities attribute
 			authorities.addAll(shibbolethAuthorities)
+		}
+
+		// if identityProvider based roles are defined, assign them here
+		if (identityProviderRoles) {
+			identityProviderRoles.each{ roleName, provider ->
+				// if the authentication method matches the method used,
+				// then add the corresponding role to the authorities
+				if (provider == authentication.identityProvider) {
+					authorities.add(new GrantedAuthorityImpl(roleName))
+				}
+			}
 		}
 
 		// if authenticationMethod based roles are defined, assign them here

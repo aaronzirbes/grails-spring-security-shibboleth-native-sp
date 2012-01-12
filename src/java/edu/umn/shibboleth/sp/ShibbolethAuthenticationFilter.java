@@ -1,12 +1,15 @@
 package edu.umn.shibboleth.sp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 
@@ -19,11 +22,11 @@ import org.springframework.util.Assert;
 class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	// configuration settings + default values
-	private final String principalUsernameAttribute;
-	private final String authenticationMethodAttribute;
-	private final String identityProviderAttribute;
-	private final String authenticationInstantAttribute;
-	private final Collection<String> extraAttributes;
+	private String principalUsernameAttribute;
+	private String authenticationMethodAttribute;
+	private String identityProviderAttribute;
+	private String authenticationInstantAttribute;
+	private Collection<String> extraAttributes;
 
 	/** Ensure all configuration settings are set */
 	@Override
@@ -40,12 +43,12 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	/** The default constructor */
 	public ShibbolethAuthenticationFilter() {
 		super("/j_spring_shibboleth_native_sp_security_check");
-		logger.debug("instantiation");
 	}
 
 	/** Try logging in the user via Shibboleth Native SP */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) 
+			throws AuthenticationException, IOException, ServletException {
 
 		Authentication token = null;
 
@@ -69,9 +72,21 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		 * DispatcherServlet/DispatcherPortlet: In this case, use RequestContextListener 
 		 * or RequestContextFilter to expose the current request.
 		 */
-		String authenticationMethod = request.getAttribute(this.authenticationMethodAttribute).toString();
-		String identityProvider = request.getAttribute(this.identityProviderAttribute).toString();
-		String authenticationInstant = request.getAttribute(this.authenticationInstantAttribute).toString();
+
+		// set defauts
+		String authenticationMethod = "";
+		String identityProvider = "";
+		String authenticationInstant = "";
+
+		// get attributes
+		Object authenticationMethodObject = request.getAttribute(this.authenticationMethodAttribute);
+		Object identityProviderObject = request.getAttribute(this.identityProviderAttribute);
+		Object authenticationInstantObject = request.getAttribute(this.authenticationInstantAttribute);
+
+		// if they are non-null, convert to string, and overwrite defaults
+		if (authenticationMethodObject != null) authenticationMethod = authenticationInstantObject.toString();
+		if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
+		if (authenticationInstantObject  != null) authenticationInstant = authenticationInstantObject.toString();
 
 		// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
 		if (request.getAttribute(this.principalUsernameAttribute) != null) {
@@ -83,8 +98,11 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// load any extra attributes
 		for (Iterator iter = this.extraAttributes.iterator(); iter.hasNext();) {
 			String key = (String) iter.next();
-			String val = request.getAttribute(key).toString();
-			attributes.put(key, val);
+			Object valObject = request.getAttribute(key);
+			if (valObject != null) {
+				String val = valObject.toString();
+				attributes.put(key, val);
+			}
 		}
 
 		// INFO: authType is not configurable, as this plugin 
