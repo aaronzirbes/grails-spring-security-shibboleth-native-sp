@@ -9,7 +9,7 @@ security {
 
 		// Token Attributes
 		principalUsername.attribute = 'EPPN'
-		authenticationMethod.attribute = 'Shib-AuthnContext-Method'
+		authenticationMethod.attribute = 'Shib-Authentication-Method'
 		identityProvider.attribute = 'Shib-Identity-Provider'
 		authenticationInstant.attribute = 'Shib-Authentication-Instant'
 			
