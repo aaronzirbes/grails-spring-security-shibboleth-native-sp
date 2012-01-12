@@ -4,7 +4,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class SpringSecurityShibbolethNativeSpGrailsPlugin {
     // the plugin version
-    def version = "0.9.7"
+    def version = "0.9.9"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.7 > *"
     // the other plugins this plugin depends on

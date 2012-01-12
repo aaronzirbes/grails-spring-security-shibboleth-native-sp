@@ -79,61 +79,71 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 		return user
 	}
 
+	/** This is a wrapper to accept any kind of authentication token, but
+	 * if a ShibbolethAuthenticationToken was not passed, it throws a BadCredentialsException.
+	 */
+	UserDetails loadUserDetails(Authentication authentication) {
+
+		UserDetails userDetails = null
+
+		try {
+			userDetails = loadUserDetails((ShibbolethAuthenticationToken) authentication)
+		} catch (Exception ex) {
+			throw BadCredentialsException('you must provide a ShibbolethAuthenticationToken')
+		}
+
+		return userDetails
+	}
+
+
 	/**
 	 * This loads the user details from the shibboleth attributes passed in the
 	 * {@code ShibbolethAuthenticationToken}
 	 */
-	UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
-
-		log.debug("ShibbolethUserDetailsService.loadUserDetails():: invocation")
+	UserDetails loadUserDetails(ShibbolethAuthenticationToken shibAuthToken) {
 
 		// set default values
-		def username = authentication.name
-		def password = ''
-		def enabled = true
-		def accountNonExpired = true
-		def credentialsNonExpired = true
-		def accountNonLocked = true
-		def eppn = authentication.eppn
-		def attributes = authorities.attributes
+		String username = shibAuthToken.name
+		String password = ''
+		boolean enabled = true
+		boolean accountNonExpired = true
+		boolean credentialsNonExpired = true
+		boolean accountNonLocked = true
+		String eppn = shibAuthToken.eppn
+		Map<String, String> attributes = shibAuthToken.attributes
 
-		Collection<GrantedAuthorityImpl> authorities
-		Collection<GrantedAuthorityImpl> ipAuthorities
-		Collection<GrantedAuthorityImpl> shibbolethAuthorities
+		def newAuthorities = [] as Set
+
+		// Load Shibboleth roles if enabled
+		if (rolesAttribute && rolesSeparator && rolesPrefix) {
+			String rolesString =  shibAuthToken.attributes[rolesAttribute]
+			Collection<String> rolesCollection = new ArrayList<String>()
+			rolesCollection.addAll( rolesString.split(rolesSeparator) )
+			rolesCollection.each{
+				def role = new GrantedAuthorityImpl( 'ROLE_' + rolesPrefix + it.toUpperCase() ) 
+				newAuthorities.add(role)
+			}
+		}
 
 		// Load IP based roles if enabled
 		if (ipAddressRoles) {
 			ipAddressRoles.each{ role, ipList ->
 				ipList.each{ ip ->
-					if (new IpAddressMatcher(ip).matches(remoteAddress)) {
-						ipAuthorities.add(new GrantedAuthorityImpl(role))
+					if (new IpAddressMatcher(ip).matches(shibAuthToken.remoteAddress)) {
+						def auth = new GrantedAuthorityImpl(role)
+						newAuthorities.add(auth)
 					}
 				}
 			}
-			if (ipAuthorities) { 
-				authorities.addAll(ipAuthorities)
-			}
-		}
-
-		// Load Shibboleth roles if enabled
-		if (rolesAttribute && rolesSeparator && rolesPrefix) {
-			def rolesString =  authentication.attributes[rolesAttribute]
-			def rolesCollection = rolesString.split(rolesSeparator)
-			shibbolethAuthorities = rolesCollection.collect{
-				new GrantedAuthorityImpl( 'ROLE_' + rolesPrefix + it.toUpperCase() ) 
-			}
-
-			// add the new shibboleth authorities to the authorities attribute
-			authorities.addAll(shibbolethAuthorities)
 		}
 
 		// if identityProvider based roles are defined, assign them here
 		if (identityProviderRoles) {
 			identityProviderRoles.each{ roleName, provider ->
 				// if the authentication method matches the method used,
-				// then add the corresponding role to the authorities
-				if (provider == authentication.identityProvider) {
-					authorities.add(new GrantedAuthorityImpl(roleName))
+				// then add the corresponding role to the newAuthorities
+				if (provider == shibAuthToken.identityProvider) {
+					newAuthorities.add(new GrantedAuthorityImpl(roleName))
 				}
 			}
 		}
@@ -142,19 +152,19 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 		if (authenticationMethodRoles) {
 			authenticationMethodRoles.each{ roleName, method ->
 				// if the authentication method matches the method used,
-				// then add the corresponding role to the authorities
-				if (method == authentication.authenticationMethod) {
-					authorities.add(new GrantedAuthorityImpl(roleName))
+				// then add the corresponding role to the newAuthorities
+				if (method == shibAuthToken.authenticationMethod) {
+					newAuthorities.add(new GrantedAuthorityImpl(roleName))
 				}
 			}
 		}
 
-		// If no authorities were set, set the default
-		if (! authorities) { authorities = DEFAULT_AUTHORITIES }
+		// If no newAuthorities were set, set the default
+		if (! newAuthorities) { newAuthorities = DEFAULT_AUTHORITIES }
 
 		// return new ShibbolethUser (principal)
-		return new ShibbolethUserDetails(username, password, enabled, accountNonExpired,
-			credentialsNonExpired, accountNonLocked, authorities, eppn, attributes)
+		return new ShibbolethUserDetails(username, enabled, 
+			newAuthorities, eppn, attributes)
 
 	}
 }
