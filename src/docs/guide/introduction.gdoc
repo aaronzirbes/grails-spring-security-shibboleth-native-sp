@@ -1,13 +1,9 @@
-This is an example documentation template. The syntax format is similar to "Textile":http://textile.thresholdstate.com/.
+The Shibboleth Native SP adds support for attributes exposed by a Native Shibboleth SP through Apache on up to the Java servlet container.
 
-You can apply formatting such as *bold*, _italic_ and @code@. Bullets are possible too:
+This plugin doesn't implement the Shibboleth SP inside the java container, but uses the recommeneded Native SP provided as a server daemon and an apache module. The ensures that security vulnarabilities specific to the SP are updated in a timely fashion. This plugin let's the shibd daemon, Apache, and Tomcat do most of the heavy lifting. By the time the http request gets to the application, the only thing this plug-in does is look for the exposed attributes expected from a Shibboleth Native SP implementation and validate that they are what was expected.
 
-* Bullet 1
-* Bullet 2
+Because of the nature of the Shibboleth Native SP, this plugin will only work when deployed to a shibboleth-aware servlet container. The side effect of this is that authentication via shibboleth is not available when running through the grails command line. You can only effectively use this plugin when it is deployed as a WAR to your production or staging server. To help you run your application in development mode, the @spring-security-mock@ plugin is recommended.
 
-As well as numbered lists:
+Before you can use this plugin, you'll need to have a working Shibboleth SP installation that is successfully communicating with Apache. Apache must be fronting your servlet container (Tomcat is preferred, as it is a known-good implementation), and your servlet container must be able to receive the attributes exposed by apache. This is typically done via setting the @useContainerSecurityW option to @false@ in your servlet container.
 
-# Number 1
-# Number 2
 
-The documentation also handles links to [guide items|guide:introduction] as well as [reference|items]

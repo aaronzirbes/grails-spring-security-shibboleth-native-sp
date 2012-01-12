@@ -1,0 +1,18 @@
+h1. Installing the Plugin
+
+This plugin depends on the Spring Security Core plugin, so you have to have that installed before this plugin will work.
+
+To install this plugin, simply issue the following command from within your project
+
+{code}
+grails install-plugin spring-security-shibboleth-native-sp
+{code}
+
+As mentioned previously, this plugin only works when deployed as a WAR to a shibboleth aware servlet container, so it is HIGHLY recommended to use this plugin in conjunction with the Spring Security Mock plugin.  You can install that plugin via the following command.
+
+{code}
+grails install-plugin spring-security-mock
+{code}
+
+For details on using the @spring-security-mock@ plugin, see the [documentation|http://aaronzirbes.github.com/grails-spring-security-mock/].  You should only use the Mock plugin when you are doing development as it essentially bypasses security and automatically applys whatever roles you have assigned in your @Config.groovy@ file.
+

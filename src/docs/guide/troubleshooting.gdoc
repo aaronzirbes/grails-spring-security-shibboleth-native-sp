@@ -1,0 +1,48 @@
+h1. Troubleshooting your install
+
+Most of the problems surrounding getting your application working with this plugin are attributed to the "Shibboleth SP > mod_shib > Apache > mod_jk > Tomcat" stack.
+
+h2. A demo application
+
+To help you see what your servlet container can see and help you diagnose problems, I have created a shibboleth-demo application that you can compile and deploy.  It will give you a pretty good view of what is going on within your servlet container.
+
+You can get the application from [github|http://github.com/aaronzirbes/grails-shibboleth-demo].  The command to clone it to your local machine is:
+
+{code}
+git clone git@github.com:aaronzirbes/grails-shibboleth-demo.git
+{code}
+
+You can build it by running 
+{code}
+grails war shibdemo
+{code}
+
+...and then deploy it to your shibboleth aware servelt container (tomcat).
+
+h2. Configuration of exposed attributes
+
+If you've deployed the demo application, you can see all of the exposed attributes from your server.  You should double-check these to make sure that these attributes match what is set in your Config.groovy file.
+
+h2. Log files
+
+Often you can check the log files to see what's going on with your server.
+Useful log files include
+* /var/log/shibboleth/*.log
+* /var/log/tomcat6/*.log
+* /var/log/apache/*.log
+* /var/log/syslog
+
+h2. Other languages
+
+Sometimes it's helpful to write a simple script in another language to see if apache can see the attributes exposed from shibboleth.  Anything will work really.  PHP, Python, Perl, Ruby, etc...
+
+h2. Back to the Documentation
+
+Often reviewing the systems installation and configuration documentation can help you diagnose quite a few problems.
+
+h2. Check the resources
+
+If all else fails, check the Resources section, this has links to quite a bit of documentation.
+You can also try posting your question to the mailing lists.
+
+If you've found a bug in the application, or have a feature you want that it doesn't support, please feel free to submit an issue via the GitHub page, and I'll see what I can do to help.
