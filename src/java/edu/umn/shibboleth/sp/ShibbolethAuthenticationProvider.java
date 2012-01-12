@@ -70,29 +70,28 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 
 		if (shibToken.getAuthenticationType() == null) {
 			throw new BadCredentialsException("authenticationType is null");
-		}
-		if (shibToken.getEppn() == null) {
+		} else if (shibToken.getAuthenticationType().length() == 0) {
+			throw new BadCredentialsException("authenticationType is empty");
+		} else if ( ! shibToken.getAuthenticationType().equals("shibboleth") ) {
+			throw new BadCredentialsException("authenticationType, '" + shibToken.getAuthenticationType() + "' != 'shibboleth'");
+		} else if (shibToken.getEppn() == null) {
 			throw new BadCredentialsException("eppn is null");
-		}
-		if (shibToken.getIdentityProvider() == null) {
+		} else if (shibToken.getEppn().length() == 0) {
+			throw new BadCredentialsException("eppn is empty");
+		} else if (shibToken.getIdentityProvider() == null) {
 			throw new BadCredentialsException("identityProvider is null");
-		}
-		if (shibToken.getAuthenticationInstant() == null) {
+		} else if (shibToken.getIdentityProvider().length() == 0) {
+			throw new BadCredentialsException("identityProvider is empty");
+		} else if (shibToken.getAuthenticationInstant() == null) {
 			throw new BadCredentialsException("authenticationInstant is null");
-		}
-		if (shibToken.getAuthenticationMethod() == null) {
+		} else if (shibToken.getAuthenticationInstant().length() == 0) {
+			throw new BadCredentialsException("authenticationInstant is empty");
+		} else if (shibToken.getAuthenticationMethod() == null) {
 			throw new BadCredentialsException("authenticationMethod is null");
-		}
-
-		// mark the authentication as valid if all the required Shib elements are present
-		if (shibToken.getAuthenticationType().equals("shibboleth")
-				&& shibToken.getEppn().length() > 0
-				&& shibToken.getIdentityProvider().length() > 0
-				&& shibToken.getAuthenticationInstant().length() > 0
-				&& shibToken.getAuthenticationMethod().length() > 0) {
-			authenticationValid = true;
+		} else if (shibToken.getAuthenticationMethod().length() == 0) {
+			throw new BadCredentialsException("authenticationMethod is empty");
 		} else {
-			throw new BadCredentialsException("required shibboleth attributes are missing.");
+			authenticationValid = true;
 		}
 
 		// Return new authentication object if authenticated
