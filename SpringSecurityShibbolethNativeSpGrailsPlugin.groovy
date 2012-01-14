@@ -49,7 +49,7 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			rolesPrefix = conf.shibboleth.roles.prefix
 			authenticationMethodRoles = conf.shibboleth.authenticationMethod.roles
 			identityProviderRoles = conf.shibboleth.identityProvider.roles
-			ipAddressRoles = conf.remoteaddress.roles
+			ipAddressRoles = conf.remoteAddress.roles
 		}       
 
 		// shibboleth authentication provider
@@ -73,8 +73,19 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			extraAttributes = conf.shibboleth.extraAttributes
 		}
 
+		// shibboleth logout filter
+		shibbolethLogoutFilter(ShibbolethLogoutFilter) {
+			handlers = ref('logoutHandlers')
+
+			principalUsernameAttribute = conf.shibboleth.principalUsername.attribute
+			authenticationMethodAttribute = conf.shibboleth.authenticationMethod.attribute
+			identityProviderAttribute = conf.shibboleth.identityProvider.attribute
+		}
+
+
 		SpringSecurityUtils.registerProvider 'shibbolethAuthenticationProvider'
-		SpringSecurityUtils.registerFilter 'shibbolethAuthenticationFilter', SecurityFilterPosition.CAS_FILTER
+		SpringSecurityUtils.registerFilter 'shibbolethLogoutFilter', SecurityFilterPosition.LOGOUT_FILTER.getOrder() + 10
+		SpringSecurityUtils.registerFilter 'shibbolethAuthenticationFilter', SecurityFilterPosition.CAS_FILTER.getOrder() - 10
 
 		println '...finished configuring Spring Security Shibboleth Native SP'
     }

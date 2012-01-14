@@ -28,7 +28,7 @@ class ShibbolethUserDetailsServiceTests {
 			shibbolethauthenticationMethodallowed: null,
 			shibbolethauthenticationMethodroles: [
 				'ROLE_UMN_MKEY': 'https://www.umn.edu/shibboleth/classes/authncontext/mkey' ],
-			remoteaddressroles: [
+			remoteAddressroles: [
 				'ROLE_UMN_CAMPUS_IP': ['160.94.0.0/16',
 					'128.101.0.0/16', 
 					'134.84.0.0/16'], 
@@ -61,7 +61,7 @@ class ShibbolethUserDetailsServiceTests {
 		shibbolethUserDetailsService.rolesSeparator = conf.shibbolethrolesseparator
 		shibbolethUserDetailsService.rolesPrefix = conf.shibbolethrolesprefix
 		shibbolethUserDetailsService.authenticationMethodRoles = conf.shibbolethauthenticationMethodroles
-		shibbolethUserDetailsService.ipAddressRoles = conf.remoteaddressroles
+		shibbolethUserDetailsService.ipAddressRoles = conf.remoteAddressroles
 		shibbolethUserDetailsService.developmentRoles = conf.shibbolethdevelopmentroles
     }
 }

@@ -59,7 +59,7 @@ shibboleth.roles.separator | ',' | This is the delimeter that separates the role
 shibboleth.roles.prefix | 'SHIB_' | This is the prefix assigned to all of the roles pulles from the shibboleth roles attribute.  This helps prevent role name collisions with other roles used.
 shibboleth.extraAttributes | @null@ | This is a list of any extra attributes you want loaded into the ShibbolethAuthenticationToken that will be exposed via the Spring Secuirity services and tags for use in your application.
 shibboleth.authenticationMethod.roles | @null@ | This is a map of [ 'ROLE_NAME': 'auth-method-string'' ] that allows the ShibbolethUserDetailsService to load specific roles based on the method of authentication.  This is useful to differentiate between guest logins, standard logins, two-factor authentication and the like.
-remoteaddress.roles | @null@ | This is used to automatically apply roles to the user based only on their origin IP address.  This  takes a parameter of a Map of role names, followed by a list of IP subnets.  This is useful to assign roles to users based on if they are logged in from your intrantet, VPN, or wireless so you can restrict authentication methods depending on origin using nothing but security annotations.
+remoteAddress.roles | @null@ | This is used to automatically apply roles to the user based only on their origin IP address.  This  takes a parameter of a Map of role names, followed by a list of IP subnets.  This is useful to assign roles to users based on if they are logged in from your intrantet, VPN, or wireless so you can restrict authentication methods depending on origin using nothing but security annotations.
 {table}
 
 h2. Configuring injected roles for your app
@@ -103,7 +103,7 @@ the first role assigns the role VPN from IP addresses coming from
 the VPN pool.  The second tells the app the user is on campus, the 
 last tells the app if the user is coming in from within the department.
 {code}
-grails.plugins.springsecurity.remoteaddress.roles = [
+grails.plugins.springsecurity.remoteAddress.roles = [
     'ROLE_IP_UMN_VPN': ['134.84.0.0/23'],
     'ROLE_IP_UMN_CAMPUS': ['160.94.0.0/16', '128.101.0.0/16', '134.84.0.0/16'],
     'ROLE_IP_UMN_DEPT': ['160.94.111.0/25', '128.101.11.222/25', '134.84.111.222/26'] ]

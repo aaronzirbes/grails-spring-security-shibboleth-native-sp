@@ -5,7 +5,6 @@ security {
 
 		// Used by Controllers
 		loginUrl = '/Shibboleth.sso/Login?target={0}'
-		logoutUrl = '/Shibboleth.sso/Logout'
 
 		// Token Attributes
 		principalUsername.attribute = 'EPPN'
@@ -29,5 +28,8 @@ security {
 	}
 
 	// Allow location based roles
-	remoteaddress.roles = null
+	remoteAddress.roles = null
+
+	// change logout URL
+	logout.afterLogoutUrl = '/Shibboleth.sso/Logout'
 }

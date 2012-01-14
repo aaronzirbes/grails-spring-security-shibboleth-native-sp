@@ -126,7 +126,7 @@ grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = [
 // grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = null
 
 // Allow location based roles
-grails.plugins.springsecurity.remoteaddress.roles = [
+grails.plugins.springsecurity.remoteAddress.roles = [
 	'ROLE_IP_UMN_VPN': ['134.84.0.0/23'], 
 	'ROLE_IP_UMN_CAMPUS': ['160.94.0.0/16', '128.101.0.0/16', '134.84.0.0/16'], 
 	'ROLE_IP_UMN_DEPT': ['160.94.224.0/25', '128.101.60.128/25', '134.84.107.192/26'] ]
