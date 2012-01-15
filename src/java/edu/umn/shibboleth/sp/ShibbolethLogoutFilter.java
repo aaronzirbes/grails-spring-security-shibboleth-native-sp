@@ -47,7 +47,7 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 	}
 
 	/** Constructor */
-	public ShibbolethLogoutFilter(LogoutSuccessHandler logoutSuccessHandler) {
+	public ShibbolethLogoutFilter() {
 		super(new DummyLogoutSuccessHandler(), new DummyLogoutHandler());
 	}
 
@@ -77,8 +77,11 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 		boolean logout = false;
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		if (ShibbolethAuthenticationToken.class.isAssignableFrom(auth.getClass())) {
+		if (auth == null) {
+			return false;
+		} else if ( ! auth.isAuthenticated() ) {
+			return false;
+		} else if ( ShibbolethAuthenticationToken.class.isAssignableFrom(auth.getClass())) {
 			ShibbolethAuthenticationToken token = (ShibbolethAuthenticationToken) auth;
 
 			// These are set by mod_shib22 in Apache and passed through mod_jk 
@@ -116,25 +119,25 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 				logger.debug("eppn is null, forcing logout");
 			} else if ( ! token.getEppn().equals(remoteUser) ) {
 				logout = true;
-				logger.debug("eppn mismatch, forcing logout");
+				logger.debug("eppn mismatch, expected '" + token.getEppn() + "', but have '" + remoteUser + "', forcing logout");
 			} else if ( authenticationType == null ) {
 				logout = true;
 				logger.debug("authenticationType is null, forcing logout");
 			} else if ( ! token.getAuthenticationType().equals(authenticationType) ) {
 				logout = true;
-				logger.debug("eppn mismatch, forcing logout");
+				logger.debug("authenticationType mismatch, expected '" + token.getAuthenticationType() + "', but got '" + authenticationType + "', forcing logout");
 			} else if ( authenticationMethod == null) {
 				logout = true;
 				logger.debug("authenticationMethod is null, forcing logout");
 			} else if ( ! token.getAuthenticationMethod().equals(authenticationMethod) ) {
 				logout = true;
-				logger.debug("authenticationMethod mismatch, forcing logout");
+				logger.debug("authenticationMethod mismatch, expected '" + token.getAuthenticationMethod() + "', but got '" + authenticationMethod + "', forcing logout");
 			} else if ( identityProvider == null) {
 				logout = true;
 				logger.debug("identityProvider is null, forcing logout");
 			} else if ( ! token.getIdentityProvider().equals(identityProvider) ) {
 				logout = true;
-				logger.debug("identityProvider mismatch, forcing logout");
+				logger.debug("identityProvider mismatch, expected '" + token.getIdentityProvider() + "', but got '" + identityProvider + "', forcing logout");
 			}
 		}
 		
@@ -142,14 +145,17 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 	}
 
 	public void setPrincipalUsernameAttribute(final String principalUsernameAttribute) {
+		logger.debug("reading principalUsername from property: " + principalUsernameAttribute);
 	   this.principalUsernameAttribute = principalUsernameAttribute;
 	}
 
 	public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
+		logger.debug("reading authenticationMethod from property: " + authenticationMethodAttribute);
 	   this.authenticationMethodAttribute = authenticationMethodAttribute;
 	}
 
 	public void setIdentityProviderAttribute(final String identityProviderAttribute) {
+		logger.debug("reading identityProvider from property: " + identityProviderAttribute);
 	   this.identityProviderAttribute = identityProviderAttribute;
 	}
 

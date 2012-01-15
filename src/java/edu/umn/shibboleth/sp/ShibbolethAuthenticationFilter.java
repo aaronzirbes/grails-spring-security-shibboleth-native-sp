@@ -84,7 +84,7 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		Object authenticationInstantObject = request.getAttribute(this.authenticationInstantAttribute);
 
 		// if they are non-null, convert to string, and overwrite defaults
-		if (authenticationMethodObject != null) authenticationMethod = authenticationInstantObject.toString();
+		if (authenticationMethodObject != null) authenticationMethod = authenticationMethodObject.toString();
 		if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
 		if (authenticationInstantObject  != null) authenticationInstant = authenticationInstantObject.toString();
 
