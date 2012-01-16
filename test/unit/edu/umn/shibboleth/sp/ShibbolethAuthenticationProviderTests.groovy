@@ -13,8 +13,8 @@ import org.junit.*
 class ShibbolethAuthenticationProviderTests {
 
 	def detailsServiceSettings
-	ShibbolethUserDetailsService shibbolethUserDetailsService
-	ShibbolethAuthenticationToken shibbolethToken
+	def shibbolethUserDetailsService
+	def shibbolethToken
 
     void setUp() {
         // Setup logic here
