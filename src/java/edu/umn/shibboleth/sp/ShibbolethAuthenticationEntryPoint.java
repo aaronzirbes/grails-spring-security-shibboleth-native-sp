@@ -24,6 +24,9 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	can change it if your implementation is different */
 	private String loginUrl = "/Shibboleth.sso/Login?target={0}";
 
+	/** Set the URL encoding UTF */
+	private String utfEncoding = "ISO-8859-1";
+
 	/** This is where we should come back to after logging in via Shiboleth */
 	private static final String securityCheckUri = "/j_spring_shibboleth_native_sp_security_check";
 
@@ -46,9 +49,9 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 		String uri = request.getContextPath() + this.securityCheckUri;
 		String returnUrl = uri;
 		try {
-			returnUrl = URLEncoder.encode(uri.toString(), "ISO-8859-1");
+			returnUrl = URLEncoder.encode(uri.toString(), utfEncoding);
 		} catch (java.io.UnsupportedEncodingException ex) {
-			logger.debug("unable to encode URL using ISO-8859-1");
+			logger.debug("unable to encode URL using " + utfEncoding);
 		}
 		return this.loginUrl.replace("{0}", returnUrl);
 	}
@@ -60,6 +63,10 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	 * @param response the HttpServletResponse
 	 */
 	protected void preCommence(final HttpServletRequest request, final HttpServletResponse response) {
+	}
+
+	public void setUtfEncoding(final String utfEncoding) {
+		this.utfEncoding = utfEncoding;
 	}
 
 	public void setLoginUrl(final String loginUrl) {

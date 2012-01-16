@@ -15,9 +15,30 @@ import org.junit.*
 @TestMixin(GrailsUnitTestMixin)
 class ShibbolethAuthenticationEntryPointTests {
 
+	void testAfterPropertiesFailure() {
+		def entryPoint = new ShibbolethAuthenticationEntryPoint(loginUrl: '')
+		shouldFail {
+			entryPoint.afterPropertiesSet()
+		}
+	}
+
+	void testEncodingFailure() {
+		def loginUrl = '/login/TARGET={0}'
+        def entryPoint = new ShibbolethAuthenticationEntryPoint(
+			loginUrl: loginUrl,
+			utfEncoding: 'FAIL')
+
+		def request = new MockHttpServletRequest('GET', '/')
+		def response = new MockHttpServletResponse()
+		def authenticationException = new InsufficientAuthenticationException('TEST')
+
+		entryPoint.commence(request, response, authenticationException)
+	}
+
     void testRedirect() {
 		def loginUrl = '/login/TARGET={0}'
         def entryPoint = new ShibbolethAuthenticationEntryPoint(loginUrl: loginUrl)
+		entryPoint.afterPropertiesSet()
 
 		def request = new MockHttpServletRequest('GET', '/')
 		def response = new MockHttpServletResponse()

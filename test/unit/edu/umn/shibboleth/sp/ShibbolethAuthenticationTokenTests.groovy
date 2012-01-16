@@ -69,6 +69,7 @@ class ShibbolethAuthenticationTokenTests {
 		assert principal == token.getPrincipal()
 		assert authorities == token.getAuthorities()
 		assert details == token.getDetails()
+		assertNull token.getCredentials()
 		
 		assertTrue token.isAuthenticated()
     }
