@@ -1,9 +1,7 @@
 package edu.umn.shibboleth.sp
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.authority.GrantedAuthorityImpl
@@ -39,7 +37,6 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	 * doesn't grant anything.
 	 */
 	private static final List<GrantedAuthority> DEFAULT_AUTHORITIES = AuthorityUtils.createAuthorityList("ROLE_USER")
-	private static final String DEFAULT_PRINCIPAL_USERNAME_ATTRIBUTE = "eppn"
 	private static final String DEFAULT_ROLES_ATTRIBUTE = null
 	private static final String DEFAULT_ROLES_SEPARATOR = "W,"
 	private static final String DEFAULT_ROLES_PREFIX = "SHIB_"
@@ -91,8 +88,9 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 		// Try to convert the authentication to a ShibbolethAuthenticationToken
 		try {
 			shibAuthToken = (ShibbolethAuthenticationToken) authentication
-		} catch (Exception ex) {
-			throw BadCredentialsException('you must provide a ShibbolethAuthenticationToken')
+		} catch (ClassCastException ex) {
+			logger.trace(ex)
+			throw new BadCredentialsException('you must provide a ShibbolethAuthenticationToken')
 		}
 		// Exit if the conversion was unsuccessful
 		if (! shibAuthToken) { return false }
@@ -100,11 +98,7 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 
 		// set default values
 		String username = shibAuthToken.name
-		String password = ''
 		boolean enabled = true
-		boolean accountNonExpired = true
-		boolean credentialsNonExpired = true
-		boolean accountNonLocked = true
 		String eppn = shibAuthToken.eppn
 		Map<String, String> attributes = shibAuthToken.attributes
 

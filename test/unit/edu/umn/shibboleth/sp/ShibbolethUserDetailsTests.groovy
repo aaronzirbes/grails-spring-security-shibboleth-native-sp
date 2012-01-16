@@ -2,8 +2,6 @@ package edu.umn.shibboleth.sp
 
 import static org.junit.Assert.*
 
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.authority.AuthorityUtils
 import grails.test.mixin.*
 import grails.test.mixin.support.*
