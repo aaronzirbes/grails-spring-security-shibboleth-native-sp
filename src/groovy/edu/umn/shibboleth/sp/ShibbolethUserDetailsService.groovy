@@ -1,8 +1,10 @@
 package edu.umn.shibboleth.sp
 
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
@@ -64,43 +66,37 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	 * This configuration attribute is why this is still a Groovy class */
 	def ipAddressRoles = null
 
-
 	/**
 	 * This is to support the {@code RememberMeService}
 	 */
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// Look up the user via RememberMeService
-		UserDetails user = registeredUsers.get(id)
+		UserDetails user = registeredUsers.get(username)
 
 		// If the user isn't found, throw an exception
-		if (user == null) { throw new UsernameNotFoundException(id) }
+		if (user == null) { throw new UsernameNotFoundException(username) }
 
 		// else return the remembered UserDetails
 		return user
 	}
 
-	/** This is a wrapper to accept any kind of authentication token, but
-	 * if a ShibbolethAuthenticationToken was not passed, it throws a BadCredentialsException.
-	 */
-	UserDetails loadUserDetails(Authentication authentication) {
-
-		UserDetails userDetails = null
-
-		try {
-			userDetails = loadUserDetails((ShibbolethAuthenticationToken) authentication)
-		} catch (Exception ex) {
-			throw BadCredentialsException('you must provide a ShibbolethAuthenticationToken')
-		}
-
-		return userDetails
-	}
-
-
 	/**
 	 * This loads the user details from the shibboleth attributes passed in the
 	 * {@code ShibbolethAuthenticationToken}
 	 */
-	UserDetails loadUserDetails(ShibbolethAuthenticationToken shibAuthToken) {
+	public UserDetails loadUserDetails(Authentication authentication) {
+
+		ShibbolethAuthenticationToken shibAuthToken
+
+		// Try to convert the authentication to a ShibbolethAuthenticationToken
+		try {
+			shibAuthToken = (ShibbolethAuthenticationToken) authentication
+		} catch (Exception ex) {
+			throw BadCredentialsException('you must provide a ShibbolethAuthenticationToken')
+		}
+		// Exit if the conversion was unsuccessful
+		if (! shibAuthToken) { return false }
+
 
 		// set default values
 		String username = shibAuthToken.name
@@ -117,11 +113,13 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 		// Load Shibboleth roles if enabled
 		if (rolesAttribute && rolesSeparator && rolesPrefix) {
 			String rolesString =  shibAuthToken.attributes[rolesAttribute]
-			Collection<String> rolesCollection = new ArrayList<String>()
-			rolesCollection.addAll( rolesString.split(rolesSeparator) )
-			rolesCollection.each{
-				def role = new GrantedAuthorityImpl( 'ROLE_' + rolesPrefix + it.toUpperCase() ) 
-				newAuthorities.add(role)
+			if (rolesString) {
+				Collection<String> rolesCollection = new ArrayList<String>()
+				rolesCollection.addAll( rolesString.split(rolesSeparator) )
+				rolesCollection.each{
+					def role = new GrantedAuthorityImpl( 'ROLE_' + rolesPrefix + it.toUpperCase() ) 
+					newAuthorities.add(role)
+				}
 			}
 		}
 

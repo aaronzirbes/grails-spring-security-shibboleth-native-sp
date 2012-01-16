@@ -12,36 +12,64 @@ import org.junit.*
 @TestMixin(GrailsUnitTestMixin)
 class ShibbolethAuthenticationTokenTests {
 
-    void setUp() {
-        // Setup logic here
-    }
-
-    void tearDown() {
-        // Tear down logic here
-    }
-
-    void testTokenInitialize() {
+    void testFilterToken() {
 
 		def authenticationMethod = 'fake.authentication.method'
 		def identityProvider = 'fake.IdP'
 		def authenticationInstant = '1234567890'
-		def authenticationType = 'something'
+		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [:]
-		def name = 'me@example.org'
 		def eppn = 'me@example.org'
-		def credentials = 'shibboleth'
-		def principal = 'me@example.org'
-		def authenticated = true
-		def authorities = []
-		def details = null
 
-		def shibbolethAuthenticationToken = new ShibbolethAuthenticationToken(name, 
-			authorities, credentials, details, principal, authenticated, 
+		def token = new ShibbolethAuthenticationToken(
 			eppn, authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
 
-		assert shibbolethAuthenticationToken.name == "me@example.org"
+		assert authenticationMethod == token.getAuthenticationMethod()
+		assert identityProvider == token.getIdentityProvider()
+		assert authenticationInstant == token.getAuthenticationInstant()
+		assert authenticationType == token.getAuthenticationType()
+		assert remoteAddress == token.getRemoteAddress()
+		assert attributes == token.getAttributes()
+		assert eppn == token.getEppn()
+		assert eppn == token.getPrincipal()
+		assertNull token.getDetails()
+
+		assertFalse token.isAuthenticated()
+    }
+
+    void testProviderToken() {
+
+		def authenticationMethod = 'fake.authentication.method'
+		def identityProvider = 'fake.IdP'
+		def authenticationInstant = '1234567890'
+		def authenticationType = 'shibboleth'
+		def remoteAddress = '127.0.0.1' 
+		def attributes = [:]
+		def eppn = 'me@example.org'
+		def principal = 'me@example.org'
+		def authorities = []
+		def details = null
+
+		def token = new ShibbolethAuthenticationToken(
+			authorities, details, principal, eppn, 
+			authenticationType, authenticationMethod, 
+			identityProvider, authenticationInstant, 
+			remoteAddress, attributes)
+
+		assert authenticationMethod == token.getAuthenticationMethod()
+		assert identityProvider == token.getIdentityProvider()
+		assert authenticationInstant == token.getAuthenticationInstant()
+		assert authenticationType == token.getAuthenticationType()
+		assert remoteAddress == token.getRemoteAddress()
+		assert attributes == token.getAttributes()
+		assert eppn == token.getEppn()
+		assert principal == token.getPrincipal()
+		assert authorities == token.getAuthorities()
+		assert details == token.getDetails()
+		
+		assertTrue token.isAuthenticated()
     }
 }

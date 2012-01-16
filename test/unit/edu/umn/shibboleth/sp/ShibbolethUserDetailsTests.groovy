@@ -15,29 +15,20 @@ import org.junit.*
 @TestMixin(GrailsUnitTestMixin)
 class ShibbolethUserDetailsTests {
 
-    void setUp() {
-        // Setup logic here
-    }
-
-    void tearDown() {
-        // Tear down logic here
-    }
-
     void testUserDetailsInstantiation() {
-		def username = 'me@example.org'
-		def password = ''
 		def enabled = true
-		def accountNonExpired = true
-		def credentialsNonExpired = true
-		def accountNonLocked = true
 		def authorities = AuthorityUtils.createAuthorityList("ROLE_USER")
 		def eppn = 'me@example.org'
-		def attributes = [:]
+		def username = eppn
+		def attributes = ['someattribute': 'some value']
 
-		def shibbolethUser = new ShibbolethUserDetails( username, password,
-			enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-			authorities, eppn, attributes)
+		def shibbolethUser = new ShibbolethUserDetails( username, 
+			enabled, authorities, eppn, attributes)
 
-		assert shibbolethUser
+		assert eppn == shibbolethUser.username
+		assert eppn == shibbolethUser.eppn
+		assert "some value" == shibbolethUser.attributes['someattribute']
+		assertTrue shibbolethUser.enabled
+		assertTrue shibbolethUser.authorities.collect{ it.toString() }.contains('ROLE_USER')
     }
 }
