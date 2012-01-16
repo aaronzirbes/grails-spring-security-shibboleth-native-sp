@@ -29,3 +29,15 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.13'
     }
 }
+
+codenarc.reports = {
+	JenkinsXmlReport('xml') {
+		outputFile = 'target/test-reports/CodeNarcReport.xml'
+		title = 'CodeNarc Report for Grails Spring Security Shibboleth Native SP plugin'
+	}
+	JenkinsHtmlReport('html') {
+		outputFile = 'CodeNarcReport.html'
+		title = 'CodeNarc Report for Grails Spring Security Shibboleth Native SP plugin'
+	}
+}
+codenarc.propertiesFile = 'grails-app/conf/codenarc.properties'
