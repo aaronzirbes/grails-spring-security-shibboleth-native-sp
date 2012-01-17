@@ -21,11 +21,12 @@ Jenkins/Hudson Integration
 	clean compile doc package-plugin "test-app -coverage -xml" codenarc
 
 If you are using Jenkins, you should have the following Jenkins plugins installed:
-* grails
-* git
-* cobertura
-* violations
-* javadoc
+
+ * grails
+ * git
+ * cobertura
+ * violations
+ * javadoc
 
 Building from the command line
 ==============================
