@@ -20,10 +20,11 @@ class ShibbolethAuthenticationTokenTests {
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [:]
-		def eppn = 'me@example.org'
+		def username = 'testuser'
+		def eppn = username + '@example.org'
 
 		def token = new ShibbolethAuthenticationToken(
-			eppn, authenticationType, authenticationMethod, 
+			eppn, username, authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
 
@@ -34,7 +35,7 @@ class ShibbolethAuthenticationTokenTests {
 		assert remoteAddress == token.getRemoteAddress()
 		assert attributes == token.getAttributes()
 		assert eppn == token.getEppn()
-		assert eppn == token.getPrincipal()
+		assert username == token.getPrincipal()
 		assertNull token.getDetails()
 
 		assertFalse token.isAuthenticated()
@@ -48,13 +49,14 @@ class ShibbolethAuthenticationTokenTests {
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [:]
-		def eppn = 'me@example.org'
-		def principal = 'me@example.org'
+		def username = 'testuser'
+		def eppn = username + '@example.org'
+		def principal = username
 		def authorities = []
 		def details = null
 
 		def token = new ShibbolethAuthenticationToken(
-			authorities, details, principal, eppn, 
+			authorities, details, principal, eppn, username,
 			authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)

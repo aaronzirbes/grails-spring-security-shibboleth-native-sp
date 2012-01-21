@@ -28,6 +28,13 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.13'
     }
+	plugins {
+		runtime ':spring-security-core:1.2.7.1'
+		runtime ':spring-security-ldap:1.0.5'
+		test ':code-coverage:1.2.5'
+		runtime ':codenarc:0.16.1'
+		runtime ':gmetrics:0.3.1'
+	}
 }
 
 codenarc.reports = {

@@ -8,23 +8,42 @@ security {
 
 		// Token Attributes
 		principalUsername.attribute = 'EPPN'
-		authenticationMethod.attribute = 'Shib-Authentication-Method'
-		identityProvider.attribute = 'Shib-Identity-Provider'
 		authenticationInstant.attribute = 'Shib-Authentication-Instant'
+		username{
+			attribute = 'EPPN' // sometimes this is 'uid'
+			stripAtDomain = false // remove the '@domain.edu' from the username attribute.
+		}
+		email.attribute = null // sometimes this is 'mail'
+		fullName.attribute = null // sometimes this is 'fullName'
+
+		authenticationMethod {
+			attribute = 'Shib-Authentication-Method'
+			// This maps roles to authentication methods to allow for security annotations
+			// for securing based on method
+			roles = null
+		}
+
+		identityProvider {
+			attribute = 'Shib-Identity-Provider'
+			// This maps IdPs to authentication methods to allow for security annotations
+			// for securing based on originating IdP server
+			roles = null
+		}
 			
 		// Used by Authentication Provider
-		roles.attribute = null
-		roles.separator = ','
-		roles.prefix = 'SHIB_'
+		roles {
+			attribute = null
+			separator = ','
+			prefix = 'SHIB_'
+			// Whether or not to load additional roles from another
+			// user details service
+			loadFromUserDetailsService = false
+		}
 		extraAttributes = [ 'Shib-Session-Index', 'Shib-Session-ID', 'Shib-AuthnContext-Class', 'Shib-Application-ID' ]
 
-		// This maps IdPs to authentication methods to allow for security annotations
-		// for securing based on originating IdP server
-		identityProvider.roles = null
-
-		// This maps roles to authentication methods to allow for security annotations
-		// for securing based on method
-		authenticationMethod.roles = null
+		// Whether to user a shibboleth user details service, or a
+		// custom user details service
+		useShibbolethUserDetails = true
 	}
 
 	// Allow location based roles

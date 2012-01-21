@@ -43,10 +43,11 @@ class ShibbolethUserDetailsServiceTests {
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [ 'someattribute': 'some value' ]
-		def eppn = 'me@example.org'
+		def username = 'testuser'
+		def eppn = username + "@example.org"
 
 		shibbolethToken = new ShibbolethAuthenticationToken(
-			eppn, authenticationType, authenticationMethod, 
+			eppn, username, authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
     }
@@ -57,7 +58,7 @@ class ShibbolethUserDetailsServiceTests {
 
 		def userDetails = shibbolethUserDetailsService.loadUserDetails(shibbolethToken)
 
-		assert "me@example.org" == userDetails.username
+		assert "testuser" == userDetails.username
 		assert "some value" == userDetails.attributes['someattribute']
     }
 

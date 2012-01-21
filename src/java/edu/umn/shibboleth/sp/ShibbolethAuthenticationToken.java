@@ -32,6 +32,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 	// request object for processing by the ShibbolethUserDetailsService
 	private Object details;
 	private Object principal;
+	private String username;
 	private String eppn;
 	private String authenticationType;
 	private String authenticationMethod;
@@ -41,7 +42,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 	private Map<String, String> attributes;
 
 	/** Constructor used by the authentication filter */
-	public ShibbolethAuthenticationToken(String eppn, 
+	public ShibbolethAuthenticationToken(String eppn, String username,
 			String authenticationType, String authenticationMethod, 
 			String identityProvider, String authenticationInstant, 
 			String remoteAddress, Map<String, String> attributes) {
@@ -49,8 +50,9 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 		super(DEFAULT_AUTHORITIES);
 
 		this.details = null;
-		this.principal = eppn;
+		this.principal = username;
 		this.eppn = eppn;
+		this.username = username;
 		this.authenticationType = authenticationType;
 		this.authenticationMethod = authenticationMethod;
 		this.identityProvider = identityProvider;
@@ -63,7 +65,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 
 	/** Constructor used by the authentication provider */
 	public ShibbolethAuthenticationToken(Collection<GrantedAuthority> authorities, 
-			Object details, Object principal, String eppn, 
+			Object details, Object principal, String eppn, String username,
 			String authenticationType, String authenticationMethod, 
 			String identityProvider, String authenticationInstant, 
 			String remoteAddress, Map<String, String> attributes) {
@@ -73,6 +75,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 		this.details = details;
 		this.principal = principal;
 		this.eppn = eppn;
+		this.username = username;
 		this.authenticationType = authenticationType;
 		this.authenticationMethod = authenticationMethod;
 		this.identityProvider = identityProvider;
@@ -85,7 +88,7 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 
 	/** username just returns eppn */
 	public String getUsername() {
-		return eppn;
+		return username;
 	}
 
 	/** Getter for credentials */

@@ -14,17 +14,20 @@ import org.junit.*
 class ShibbolethUserDetailsTests {
 
     void testUserDetailsInstantiation() {
-		def enabled = true
 		def authorities = AuthorityUtils.createAuthorityList("ROLE_USER")
-		def eppn = 'me@example.org'
-		def username = eppn
+		def username = 'testuser'
+		def eppn = username + '@example.org'
+		def email = eppn
+		def fullName = 'Test P. User'
 		def attributes = ['someattribute': 'some value']
 
 		def shibbolethUser = new ShibbolethUserDetails( username, 
-			enabled, authorities, eppn, attributes)
+			email, fullName, authorities, eppn, attributes)
 
-		assert eppn == shibbolethUser.username
+		assert username == shibbolethUser.username
 		assert eppn == shibbolethUser.eppn
+		assert email == shibbolethUser.email
+		assert fullName == shibbolethUser.fullName
 		assert "some value" == shibbolethUser.attributes['someattribute']
 		assertTrue shibbolethUser.enabled
 		assertTrue shibbolethUser.authorities.collect{ it.toString() }.contains('ROLE_USER')

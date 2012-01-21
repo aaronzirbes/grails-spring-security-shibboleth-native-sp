@@ -49,6 +49,7 @@ class ShibbolethAuthenticationFilterTests {
 
 		filterSettings = [
 			principalUsernameAttribute: 'EPPN',
+			usernameAttribute: 'EPPN',
 			authenticationMethodAttribute: 'Shib-Authentication-Method',
 			identityProviderAttribute: 'Shib-Identity-Provider',
 			authenticationInstantAttribute: 'Shib-Authentication-Instant',
@@ -64,6 +65,20 @@ class ShibbolethAuthenticationFilterTests {
 		// EPPN Missing should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
+				authenticationMethodAttribute: 'Shib-Authentication-Method',
+				identityProviderAttribute: 'Shib-Identity-Provider',
+				authenticationInstantAttribute: 'Shib-Authentication-Instant',
+				extraAttributes: [ 'Shib-AuthnContext-Class', 'Shib-Application-ID' ],
+				authenticationManager: authenticationManager)
+
+			shibbolethAuthenticationFilter.afterPropertiesSet()
+		}
+
+		// Username Missing should fail
+		shouldFail {
+			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				principalUsernameAttribute: 'EPPN',
 				authenticationMethodAttribute: 'Shib-Authentication-Method',
 				identityProviderAttribute: 'Shib-Identity-Provider',
 				authenticationInstantAttribute: 'Shib-Authentication-Instant',
@@ -76,6 +91,7 @@ class ShibbolethAuthenticationFilterTests {
 		// authenticationMethodAttribute missing should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
 				principalUsernameAttribute: 'EPPN',
 				identityProviderAttribute: 'Shib-Identity-Provider',
 				authenticationInstantAttribute: 'Shib-Authentication-Instant',
@@ -88,6 +104,7 @@ class ShibbolethAuthenticationFilterTests {
 		// identityProviderAttribute missing should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
 				principalUsernameAttribute: 'EPPN',
 				authenticationMethodAttribute: 'Shib-Authentication-Method',
 				authenticationInstantAttribute: 'Shib-Authentication-Instant',
@@ -100,6 +117,7 @@ class ShibbolethAuthenticationFilterTests {
 		// missing authenticationInstantAttribute should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
 				principalUsernameAttribute: 'EPPN',
 				authenticationMethodAttribute: 'Shib-Authentication-Method',
 				identityProviderAttribute: 'Shib-Identity-Provider',
@@ -112,6 +130,7 @@ class ShibbolethAuthenticationFilterTests {
 		// missing extraAttributes should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
 				principalUsernameAttribute: 'EPPN',
 				authenticationMethodAttribute: 'Shib-Authentication-Method',
 				identityProviderAttribute: 'Shib-Identity-Provider',
@@ -124,6 +143,7 @@ class ShibbolethAuthenticationFilterTests {
 		// authenticationManager mission should fail
 		shouldFail {
 			def shibbolethAuthenticationFilter = new ShibbolethAuthenticationFilter(
+				usernameAttribute: 'EPPN',
 				principalUsernameAttribute: 'EPPN',
 				authenticationMethodAttribute: 'Shib-Authentication-Method',
 				identityProviderAttribute: 'Shib-Identity-Provider',

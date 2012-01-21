@@ -47,14 +47,15 @@ class ShibbolethLogoutFilterTests {
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [:]
-		def eppn = 'me@example.org'
-		def principal = 'me@example.org'
+		def username = 'testuser'
+		def eppn = username + '@example.org'
+		def principal = eppn
 		def authorities = []
 		def details = null
 
 		// Shib Token
 		shibbolethAuthenticationToken = new ShibbolethAuthenticationToken(
-			authorities, details, principal, eppn, 
+			authorities, details, principal, eppn, username,
 			authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
@@ -63,7 +64,7 @@ class ShibbolethLogoutFilterTests {
 		authenticationMethod = 'changed.authentication.method'
 
 		changedShibbolethAuthenticationToken = new ShibbolethAuthenticationToken(
-			authorities, details, principal, eppn, 
+			authorities, details, principal, eppn, username,
 			authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
@@ -132,7 +133,7 @@ class ShibbolethLogoutFilterTests {
 		def identityProvider = 'fake.IdP'
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
-		def eppn = 'me@example.org'
+		def eppn = 'testuser@example.org'
 		request.setAuthType(authenticationType)
 		request.setRemoteUser(eppn)
 		request.setRemoteAddr(remoteAddress)

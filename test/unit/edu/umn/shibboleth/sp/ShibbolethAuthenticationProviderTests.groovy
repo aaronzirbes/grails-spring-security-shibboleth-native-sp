@@ -43,17 +43,18 @@ class ShibbolethAuthenticationProviderTests {
 		def authenticationType = 'shibboleth'
 		def remoteAddress = '127.0.0.1' 
 		def attributes = [:]
-		def eppn = 'me@example.org'
+		def username = 'testuser'
+		def eppn = username + '@example.org'
 
 		shibbolethToken = new ShibbolethAuthenticationToken(
-			eppn, authenticationType, authenticationMethod, 
+			eppn, username, authenticationType, authenticationMethod, 
 			identityProvider, authenticationInstant, 
 			remoteAddress, attributes)
 
     }
 
 	void testShibbolethTokenOk() {
-		String username = 'me@example.org'
+		String username = 'testuser'
 		assert username == shibbolethToken.username
 	}
 

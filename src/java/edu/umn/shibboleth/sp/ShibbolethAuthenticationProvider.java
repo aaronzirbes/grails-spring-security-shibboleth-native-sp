@@ -1,7 +1,6 @@
 package edu.umn.shibboleth.sp;
 
 import java.util.Collection;
-import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -9,13 +8,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.util.IpAddressMatcher;
 import org.springframework.util.Assert;
 
 /**
@@ -36,6 +31,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	
 	// Support for Shibboleth User Details Service
 	private AuthenticationUserDetailsService authenticationUserDetailsService;
+	private UserDetailsService userDetailsService;
 	// TODO: Support DAO Details Service if configured
 	// TODO: Support LDAP Details Service if plugin installed and configured
 	// TODO: Support Active Directory Details Service if configured
@@ -43,7 +39,8 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	//~ Methods ===========================================================================================
 
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(authenticationUserDetailsService, "An authenticationUserDetailsService must be set");
+		boolean oneIsSet = (authenticationUserDetailsService != null || userDetailsService != null);
+		Assert.isTrue(oneIsSet, "An authenticationUserDetailsService or userDetailsService must be set");
 	}
 
 	public ShibbolethAuthenticationProvider() {
@@ -102,7 +99,13 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 			Collection<GrantedAuthority> authorities = shibToken.getAuthorities();
 
 			// load user details from the authentication
-			UserDetails userDetails = this.authenticationUserDetailsService.loadUserDetails(shibToken);
+			UserDetails userDetails = null;
+			if (this.authenticationUserDetailsService != null) {
+				userDetails = this.authenticationUserDetailsService.loadUserDetails(shibToken);
+			} else {
+				userDetails = this.userDetailsService.loadUserByUsername(shibToken.getUsername());
+			}
+
 			if (userDetails != null) {
 		   		principal = userDetails;
 				authorities = userDetails.getAuthorities();
@@ -111,7 +114,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 			}
 
 			return new ShibbolethAuthenticationToken(authorities,
-					shibToken.getDetails(), principal, shibToken.getEppn(), 
+					shibToken.getDetails(), principal, shibToken.getEppn(), shibToken.getUsername(),
 					shibToken.getAuthenticationType(), shibToken.getAuthenticationMethod(),
 					shibToken.getIdentityProvider(), shibToken.getAuthenticationInstant(),
 					shibToken.getRemoteAddress(), shibToken.getAttributes());
@@ -132,7 +135,7 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 	 * Used to load the authorities and user details for the Shibboleth service
 	 */
 	public void setUserDetailsService(final UserDetailsService userDetailsService) {
-		this.authenticationUserDetailsService = new UserDetailsByNameServiceWrapper(userDetailsService);
+		this.userDetailsService = userDetailsService;
 	}
 
 	/**

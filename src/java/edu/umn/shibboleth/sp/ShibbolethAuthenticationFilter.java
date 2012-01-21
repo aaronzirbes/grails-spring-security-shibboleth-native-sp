@@ -1,7 +1,6 @@
 package edu.umn.shibboleth.sp;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,9 +22,11 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 	// configuration settings + default values
 	private String principalUsernameAttribute;
+	private String usernameAttribute;
 	private String authenticationMethodAttribute;
 	private String identityProviderAttribute;
 	private String authenticationInstantAttribute;
+	private boolean stripAtDomain;
 	private Collection<String> extraAttributes;
 
 	/** Ensure all configuration settings are set */
@@ -33,7 +34,9 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 
+		Assert.notNull(stripAtDomain, "stripAtDomain cannot be null");
 		Assert.notNull(principalUsernameAttribute, "principalUsernameAttribute cannot be null");
+		Assert.notNull(usernameAttribute, "usernameAttribute cannot be null");
 		Assert.notNull(authenticationMethodAttribute, "authenticationMethodAttribute cannot be null");
 		Assert.notNull(identityProviderAttribute, "identityProviderAttribute cannot be null");
 		Assert.notNull(authenticationInstantAttribute, "authenticationInstantAttribute cannot be null");
@@ -60,18 +63,11 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
 		// This is often referred to as "pre-authentication"
 		String remoteUser = request.getRemoteUser();
+		String username = request.getRemoteUser();
 		String remoteAddress = request.getRemoteAddr();
 		String authType = request.getAuthType();
 
 		// These are configurable attributes to load
-		/* TODO: I'm getting the following error
-		 * No thread-bound request found: Are you referring to request attributes outside 
-		 * of an actual web request, or processing a request outside of the originally 
-		 * receiving thread? If you are actually operating within a web request and still 
-		 * receive this message, your code is probably running outside of 
-		 * DispatcherServlet/DispatcherPortlet: In this case, use RequestContextListener 
-		 * or RequestContextFilter to expose the current request.
-		 */
 
 		// set defauts
 		String authenticationMethod = "";
@@ -82,15 +78,24 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		Object authenticationMethodObject = request.getAttribute(this.authenticationMethodAttribute);
 		Object identityProviderObject = request.getAttribute(this.identityProviderAttribute);
 		Object authenticationInstantObject = request.getAttribute(this.authenticationInstantAttribute);
+		Object usernameObject = request.getAttribute(this.usernameAttribute);
+		Object principalUsernameObject = request.getAttribute(this.principalUsernameAttribute);
 
 		// if they are non-null, convert to string, and overwrite defaults
 		if (authenticationMethodObject != null) authenticationMethod = authenticationMethodObject.toString();
 		if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
 		if (authenticationInstantObject  != null) authenticationInstant = authenticationInstantObject.toString();
+		if (usernameObject  != null) remoteUser = usernameObject.toString();
+		if (principalUsernameObject  != null) username = principalUsernameObject.toString();
 
-		// overwrite the remoteUser if the principalUsernameAttribute was set, and contains a value
-		if (request.getAttribute(this.principalUsernameAttribute) != null) {
-			remoteUser = request.getAttribute(this.principalUsernameAttribute).toString();
+		// support stripping of the @domain.edu part of the username if the app doesn't want to use it.
+		if (stripAtDomain) {
+			// look for an @
+			int atPosition = remoteUser.indexOf('@');
+			// If it's at least after the first character...
+			if (atPosition > 1) {
+				remoteUser = remoteUser.substring(0, atPosition - 1);
+			}
 		}
 
 		HashMap<String, String> attributes = new HashMap<String, String>();
@@ -124,7 +129,7 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 			logger.debug("building a shibboleth token");
 
 			ShibbolethAuthenticationToken shibbolethAuthenticationToken = new
-				ShibbolethAuthenticationToken(remoteUser, authType, authenticationMethod, 
+				ShibbolethAuthenticationToken(remoteUser, username, authType, authenticationMethod, 
 					identityProvider, authenticationInstant, remoteAddress, attributes);
 
 			logger.debug("calling authenticate()");
@@ -138,6 +143,10 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	   this.principalUsernameAttribute = principalUsernameAttribute;
 	}
 
+	public void setUsernameAttribute(final String usernameAttribute) {
+		this.usernameAttribute = usernameAttribute;
+	}
+
 	public void setAuthenticationMethodAttribute(final String authenticationMethodAttribute) {
 	   this.authenticationMethodAttribute = authenticationMethodAttribute;
 	}
@@ -148,6 +157,10 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
 	public void setAuthenticationInstantAttribute(final String authenticationInstantAttribute) {
 	   this.authenticationInstantAttribute = authenticationInstantAttribute;
+	}
+
+	public void setStripAtDomain(final boolean stripAtDomain) {
+		this.stripAtDomain = stripAtDomain;
 	}
 
 	public void setExtraAttributes(final Collection<String> extraAttributes) {

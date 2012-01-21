@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.util.IpAddressMatcher
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator
 
 /**
 	Abstract class for using the provided Shibboleth assertion to construct
@@ -40,6 +41,8 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	private static final String DEFAULT_ROLES_ATTRIBUTE = null
 	private static final String DEFAULT_ROLES_SEPARATOR = "W,"
 	private static final String DEFAULT_ROLES_PREFIX = "SHIB_"
+	private static final String DEFAULT_EMAIL_ATTRIBUTE = null
+	private static final String DEFAULT_FULLNAME_ATTRIBUTE = null
 
 	/** This is the exposed attribute that contains the user's roles */
 	String rolesAttribute = DEFAULT_ROLES_ATTRIBUTE
@@ -47,6 +50,10 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	String rolesSeparator = DEFAULT_ROLES_SEPARATOR
 	/** This is the prefix to apply to all the roles loaded from the exposed roles attribute */
 	String rolesPrefix = DEFAULT_ROLES_PREFIX
+	/** This is the optional attribute that contains the user's full name */
+	String emailAttribute = DEFAULT_EMAIL_ATTRIBUTE
+	/** This is the optional attribute that contains the user's email address */
+	String fullNameAttribute = DEFAULT_FULLNAME_ATTRIBUTE
 	/** This is a map of roles to apply when specific authentication methods are used.
 	  * This is primarily used to identify guest or two-factor authentication. */
 	HashMap<String, String> authenticationMethodRoles = new HashMap<String, String>()
@@ -64,9 +71,22 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 	def ipAddressRoles = null
 
 	/**
+	 * This is to support loading roles from LDAP
+	 */
+	String userDnBase
+	DefaultLdapAuthoritiesPopulator ldapAuthoritiesPopulator
+
+	/**
+	 * This is to support loading roles from any userDetailsService, this includes
+	 * but is not limited to the DAO user details service that can load roles
+	 * from GORM.
+	 */
+	UserDetailsService userDetailsService
+
+	/**
 	 * This is to support the {@code RememberMeService}
 	 */
-	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		// Look up the user via RememberMeService
 		UserDetails user = registeredUsers.get(username)
 
@@ -98,14 +118,15 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 
 		// set default values
 		String username = shibAuthToken.name
-		boolean enabled = true
+		String fullName = null
+		String email = null
 		String eppn = shibAuthToken.eppn
 		Map<String, String> attributes = shibAuthToken.attributes
 
 		def newAuthorities = [] as Set
 
 		// Load Shibboleth roles if enabled
-		if (rolesAttribute && rolesSeparator && rolesPrefix) {
+		if (rolesAttribute && rolesSeparator && rolesPrefix && shibAuthToken.attributes.containsKey(rolesAttribute)) {
 			String rolesString =  shibAuthToken.attributes[rolesAttribute]
 			if (rolesString) {
 				Collection<String> rolesCollection = new ArrayList<String>()
@@ -115,6 +136,16 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 					newAuthorities.add(role)
 				}
 			}
+		}
+
+		// Get fullname if available
+		if (fullNameAttribute && shibAuthToken.attributes.containsKey(fullNameAttribute)) {
+			fullName = shibAuthToken.attributes[fullNameAttribute]
+		}
+
+		// Get email if available
+		if (emailAttribute && shibAuthToken.attributes.containsKey(emailAttribute)) {
+			email = shibAuthToken.attributes[emailAttribute]
 		}
 
 		// Load IP based roles if enabled
@@ -151,12 +182,32 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 			}
 		}
 
+		// if LDAP is configured and enabled, load LDAP roles
+		if (userDnBase && ldapAuthoritiesPopulator) {
+			// TODO: replace this userDn contstructor with the LDAP user search.  It works for me though for now...
+			String userDn = 'cn=' + username + ',' + userDnBase
+			def ldapAuthorities = ldapAuthoritiesPopulator.getGroupMembershipRoles(userDn, username)
+
+			ldapAuthorities.each{ role ->
+				// Add the LDAP roles
+				newAuthorities.add(new GrantedAuthorityImpl(role.getAuthority().toString()))
+			}
+		}
+
+		// if userDetailsService is set, try to load roles from there too!
+		if (userDetailsService) {
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username)
+			userDetails?.authorities.each{ role ->
+				newAuthorities.add(new GrantedAuthorityImpl(role.getAuthority().toString()))
+			}
+		}
+
 		// If no newAuthorities were set, set the default
 		if (! newAuthorities) { newAuthorities = DEFAULT_AUTHORITIES }
 
 		// return new ShibbolethUser (principal)
-		return new ShibbolethUserDetails(username, enabled, 
-			newAuthorities, eppn, attributes)
+		return new ShibbolethUserDetails(username, email, 
+			fullName, newAuthorities, eppn, attributes)
 
 	}
 }
