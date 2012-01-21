@@ -26,7 +26,7 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	private String authenticationMethodAttribute;
 	private String identityProviderAttribute;
 	private String authenticationInstantAttribute;
-	private boolean stripAtDomain;
+	private boolean usernameStripAtDomain;
 	private Collection<String> extraAttributes;
 
 	/** Ensure all configuration settings are set */
@@ -34,7 +34,7 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 
-		Assert.notNull(stripAtDomain, "stripAtDomain cannot be null");
+		Assert.notNull(usernameStripAtDomain, "usernameStripAtDomain cannot be null");
 		Assert.notNull(principalUsernameAttribute, "principalUsernameAttribute cannot be null");
 		Assert.notNull(usernameAttribute, "usernameAttribute cannot be null");
 		Assert.notNull(authenticationMethodAttribute, "authenticationMethodAttribute cannot be null");
@@ -85,11 +85,11 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		if (authenticationMethodObject != null) authenticationMethod = authenticationMethodObject.toString();
 		if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
 		if (authenticationInstantObject  != null) authenticationInstant = authenticationInstantObject.toString();
-		if (usernameObject  != null) remoteUser = usernameObject.toString();
+		if (usernameObject != null) remoteUser = usernameObject.toString();
 		if (principalUsernameObject  != null) username = principalUsernameObject.toString();
 
 		// support stripping of the @domain.edu part of the username if the app doesn't want to use it.
-		if (stripAtDomain) {
+		if (usernameStripAtDomain && remoteUser != null) {
 			// look for an @
 			int atPosition = remoteUser.indexOf('@');
 			// If it's at least after the first character...
@@ -159,8 +159,8 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	   this.authenticationInstantAttribute = authenticationInstantAttribute;
 	}
 
-	public void setStripAtDomain(final boolean stripAtDomain) {
-		this.stripAtDomain = stripAtDomain;
+	public void setUsernameStripAtDomain(final boolean usernameStripAtDomain) {
+		this.usernameStripAtDomain = usernameStripAtDomain;
 	}
 
 	public void setExtraAttributes(final Collection<String> extraAttributes) {
