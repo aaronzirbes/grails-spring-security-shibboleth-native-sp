@@ -7,10 +7,10 @@ security {
 		loginUrl = '/Shibboleth.sso/Login?target={0}'
 
 		// Token Attributes
-		principalUsername.attribute = 'EPPN'
+		principalUsername.attribute = 'eppn'
 		authenticationInstant.attribute = 'Shib-Authentication-Instant'
 		username{
-			attribute = 'EPPN' // sometimes this is 'uid'
+			attribute = 'eppn' // sometimes this is 'uid'
 			stripAtDomain = false // remove the '@domain.edu' from the username attribute.
 		}
 		email.attribute = null // sometimes this is 'mail'
@@ -44,6 +44,9 @@ security {
 		// Whether to user a shibboleth user details service, or a
 		// custom user details service
 		useShibbolethUserDetails = true
+
+
+		login.filterProcessesUrl = "/j_spring_shibboleth_native_sp_security_check"
 	}
 
 	// Allow location based roles

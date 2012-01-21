@@ -117,7 +117,7 @@ class ShibbolethUserDetailsService implements UserDetailsService, Authentication
 
 
 		// set default values
-		String username = shibAuthToken.name
+		String username = shibAuthToken.username
 		String fullName = null
 		String email = null
 		String eppn = shibAuthToken.eppn

@@ -10,7 +10,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.ldap.GrailsLdapAuthorit
 
 class SpringSecurityShibbolethNativeSpGrailsPlugin {
     // the plugin version
-    def version = "1.0.0M5"
+    def version = "1.0.0"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.0 > *"
     // the other plugins this plugin depends on
@@ -92,7 +92,7 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 		}   
 
 		// shibboleth authentication filter 
-		shibbolethAuthenticationFilter(ShibbolethAuthenticationFilter) {
+		shibbolethAuthenticationFilter(ShibbolethAuthenticationFilter, conf.shibboleth.login.filterProcessesUrl) {
 			authenticationDetailsSource = ref('authenticationDetailsSource')                                               
 			authenticationFailureHandler = ref('authenticationFailureHandler')
 			authenticationManager = ref('authenticationManager')
@@ -101,9 +101,10 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 			sessionAuthenticationStrategy = ref('sessionAuthenticationStrategy')
 
 			principalUsernameAttribute = conf.shibboleth.principalUsername.attribute
-			usernameAttribute = conf.shibboleth.username.attribute
 			authenticationMethodAttribute = conf.shibboleth.authenticationMethod.attribute
 			identityProviderAttribute = conf.shibboleth.identityProvider.attribute                                         
+
+			usernameAttribute = conf.shibboleth.username.attribute
 			authenticationInstantAttribute = conf.shibboleth.authenticationInstant.attribute                               
 			extraAttributes = conf.shibboleth.extraAttributes
 

@@ -86,6 +86,10 @@ class ShibbolethAuthenticationToken extends AbstractAuthenticationToken implemen
 		setAuthenticated(true);
 	}
 
+	public String toString() {
+		return super.toString() + ", eppn: '" + this.eppn + "'";
+	}
+
 	/** username just returns eppn */
 	public String getUsername() {
 		return username;

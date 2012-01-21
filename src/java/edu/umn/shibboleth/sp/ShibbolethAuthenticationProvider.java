@@ -113,6 +113,8 @@ class ShibbolethAuthenticationProvider implements AuthenticationProvider, Initia
 		   		principal = shibToken.getEppn();
 			}
 
+			logger.debug("Authenticated Shibboleth Token: [eppn='" + shibToken.getEppn() + "', username='" + shibToken.getUsername() + "']");
+
 			return new ShibbolethAuthenticationToken(authorities,
 					shibToken.getDetails(), principal, shibToken.getEppn(), shibToken.getUsername(),
 					shibToken.getAuthenticationType(), shibToken.getAuthenticationMethod(),

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -19,6 +20,8 @@ import org.springframework.util.Assert;
 	@author <a href="mailto:ajz@umn.edu">Aaron J. Zirbes</a>
 */
 class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
+	private final Logger logger = Logger.getLogger(this.getClass());
 
 	// configuration settings + default values
 	private String principalUsernameAttribute;
@@ -46,6 +49,12 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	/** The default constructor */
 	public ShibbolethAuthenticationFilter() {
 		super("/j_spring_shibboleth_native_sp_security_check");
+		this.setFilterProcessesUrl("/j_spring_shibboleth_native_sp_security_check");
+	}
+
+	public ShibbolethAuthenticationFilter(String filterProcessesUrl) {
+		super(filterProcessesUrl);
+		this.setFilterProcessesUrl(filterProcessesUrl);
 	}
 
 	/** Try logging in the user via Shibboleth Native SP */
@@ -62,8 +71,9 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// This means you MUST trust the assertions chain made by mod_jk, and in 
 		// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
 		// This is often referred to as "pre-authentication"
-		String remoteUser = request.getRemoteUser();
-		String username = request.getRemoteUser();
+		String eppn = request.getRemoteUser();
+		if (eppn != null) { logger.debug("request.getRemoteUser() = " + eppn); }
+		String username = eppn;
 		String remoteAddress = request.getRemoteAddr();
 		String authType = request.getAuthType();
 
@@ -77,24 +87,35 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// get attributes
 		Object authenticationMethodObject = request.getAttribute(this.authenticationMethodAttribute);
 		Object identityProviderObject = request.getAttribute(this.identityProviderAttribute);
+		Object principalUsernameObject = request.getAttribute(this.principalUsernameAttribute);
 		Object authenticationInstantObject = request.getAttribute(this.authenticationInstantAttribute);
 		Object usernameObject = request.getAttribute(this.usernameAttribute);
-		Object principalUsernameObject = request.getAttribute(this.principalUsernameAttribute);
 
 		// if they are non-null, convert to string, and overwrite defaults
-		if (authenticationMethodObject != null) authenticationMethod = authenticationMethodObject.toString();
-		if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
-		if (authenticationInstantObject  != null) authenticationInstant = authenticationInstantObject.toString();
-		if (usernameObject != null) remoteUser = usernameObject.toString();
-		if (principalUsernameObject  != null) username = principalUsernameObject.toString();
+		if (authenticationMethodObject != null) {
+			authenticationMethod = authenticationMethodObject.toString();
+		} else { logger.debug("could not read session property " + this.authenticationMethodAttribute); }
+		if (identityProviderObject  != null) {
+			identityProvider = identityProviderObject.toString();
+		} else { logger.debug("could not read session property " + this.identityProviderAttribute); }
+		if (principalUsernameObject  != null) {
+			eppn = principalUsernameObject.toString();
+		} else { logger.debug("could not read session property " + this.principalUsernameAttribute + " for eppn"); }
+
+		if (authenticationInstantObject  != null) {
+			authenticationInstant = authenticationInstantObject.toString();
+		} else { logger.debug("could not read session property " + this.authenticationInstantAttribute); }
+		if (usernameObject != null) {
+			username = usernameObject.toString();
+		} else { logger.debug("could not read session property " + this.usernameAttribute + " for username"); }
 
 		// support stripping of the @domain.edu part of the username if the app doesn't want to use it.
-		if (usernameStripAtDomain && remoteUser != null) {
+		if (usernameStripAtDomain && username != null) {
 			// look for an @
-			int atPosition = remoteUser.indexOf('@');
+			int atPosition = username.indexOf('@');
 			// If it's at least after the first character...
 			if (atPosition > 1) {
-				remoteUser = remoteUser.substring(0, atPosition - 1);
+				username = username.substring(0, atPosition);
 			}
 		}
 
@@ -113,23 +134,27 @@ class ShibbolethAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		// INFO: authType is not configurable, as this plugin 
 		// is meant to be used with the Shibboleth Native SP that 
 		// integrates with Apache
-		if (remoteUser == null) {
-			logger.debug("remoteUser is null.  No valid shibboleth session found.");
-		} else if ( remoteUser.length() <= 0 ) {
-			logger.debug("remoteUser is empty.  No valid shibboleth session found.");
+		if (eppn == null) {
+			logger.debug("eppn is null.  No valid shibboleth session found.");
+		} else if ( eppn.length() <= 0 ) {
+			logger.debug("eppn is empty.  No valid shibboleth session found.");
+		} else if (username == null) {
+			logger.debug("username is null.  No valid shibboleth session found.");
+		} else if ( username.length() <= 0 ) {
+			logger.debug("username is empty.  No valid shibboleth session found.");
 		} else if ( authType == null ) {
 			logger.debug("authType is null.   No valid shibboleth session found.");
 		} else if ( ! authType.equals("shibboleth") ) {
 			logger.debug("authType is not 'shibboleth'.  No valid shibboleth session found.");
 		} else {
 			// create the token
-			// principal is set to remoteUser because the default string convert (toString)
+			// principal is set to eppn because the default string convert (toString)
 			// for the AbstractAuthenticationProcessingFilter class is principal.toString()
 
 			logger.debug("building a shibboleth token");
 
 			ShibbolethAuthenticationToken shibbolethAuthenticationToken = new
-				ShibbolethAuthenticationToken(remoteUser, username, authType, authenticationMethod, 
+				ShibbolethAuthenticationToken(eppn, username, authType, authenticationMethod, 
 					identityProvider, authenticationInstant, remoteAddress, attributes);
 
 			logger.debug("calling authenticate()");

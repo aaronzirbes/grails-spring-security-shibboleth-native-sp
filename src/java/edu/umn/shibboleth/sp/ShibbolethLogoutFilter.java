@@ -86,7 +86,8 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 			// This means you MUST trust the assertions chain made by mod_jk, and in 
 			// turn Apache, and in turn mod_shib22, and in turn the Shibboleth SP (shibd)
 			// This is often referred to as "pre-authentication"
-			String remoteUser = request.getRemoteUser();
+			String eppn = request.getRemoteUser();
+			if (eppn != null) { logger.debug("request.getRemoteUser() = " + eppn); }
 			String authenticationType = request.getAuthType();
 
 			// These are configurable attributes to load
@@ -98,25 +99,28 @@ class ShibbolethLogoutFilter extends LogoutFilter {
 			// get attributes
 			Object authenticationMethodObject = request.getAttribute(this.authenticationMethodAttribute);
 			Object identityProviderObject = request.getAttribute(this.identityProviderAttribute);
+			Object principalUsernameObject = request.getAttribute(this.principalUsernameAttribute);
 
 			// if they are non-null, convert to string, and overwrite defaults
-			if (identityProviderObject  != null) identityProvider = identityProviderObject.toString();
-			if (authenticationMethodObject  != null) authenticationMethod = authenticationMethodObject.toString();
-
-			// overwrite the remoteuser if the principalusernameattribute was set, and contains a value
-			if (request.getAttribute(this.principalUsernameAttribute) != null) {
-				remoteUser = request.getAttribute(this.principalUsernameAttribute).toString();
-			}
+			if (authenticationMethodObject != null) {
+				authenticationMethod = authenticationMethodObject.toString();
+			} else { logger.debug("could not read session property " + this.authenticationMethodAttribute); }
+			if (identityProviderObject  != null) {
+				identityProvider = identityProviderObject.toString();
+			} else { logger.debug("could not read session property " + this.identityProviderAttribute); }
+			if (principalUsernameObject  != null) {
+				eppn = principalUsernameObject.toString();
+			} else { logger.debug("could not read session property " + this.principalUsernameAttribute); }
 
 			// INFO: authType is not configurable, as this plugin 
 			// is meant to be used with the Shibboleth Native SP that 
 			// integrates with Apache
-			if (remoteUser == null) {
+			if (eppn == null) {
 				logout = true;
 				logger.debug("eppn is null, forcing logout");
-			} else if ( ! token.getEppn().equals(remoteUser) ) {
+			} else if ( ! token.getEppn().equals(eppn) ) {
 				logout = true;
-				logger.debug("eppn mismatch, expected '" + token.getEppn() + "', but have '" + remoteUser + "', forcing logout");
+				logger.debug("eppn mismatch, expected '" + token.getEppn() + "', but have '" + eppn + "', forcing logout");
 			} else if ( authenticationType == null ) {
 				logout = true;
 				logger.debug("authenticationType is null, forcing logout");
