@@ -15,6 +15,6 @@ Those components are
 ** Installed and configured to use the authentication passed to is by Apache
 * Your application, compiled and deployed as a WAR
 
-I run this stack on Ubuntu Servers, and all of my system installation and configuration documentation is publicly available through my [Wiki page hosted on the University of Minnesota Wiki server|http://wiki.umn.edu/main/AaronZirbes].  Feel free to refer to this documentation to find implementation details and configuration examples.
+Reference configuration instructions for an Ubuntu based setup are available [here|https://wiki.umn.edu/Main/Tomcat6ServerOnUbuntuServer10_04LTS].
 
-When you get stuck, please check out the resources for more documentation and links.
+More background information is available on the [Internet2 Shibboleth Wiki|https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPJavaInstall].

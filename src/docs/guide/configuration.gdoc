@@ -6,7 +6,7 @@ All of the configuration settings are set in your @grails-app/conf/Config.groovy
 
 h2. Configuring for Development
 
-As stated before, this plugin only works in production and/or test, and you should supplement this plugin with the spring-security-mock plugin for development.  The way to set up this configuration is as follows:
+As stated before, this plugin only works in production and/or test, and you should supplement this plugin with the spring-security-mock plugin, or some other authentication method for development.  The way to set up this configuration is as follows:
 
 {code}
 environments {
@@ -143,11 +143,9 @@ grails.plugins.springsecurity.remoteAddress.roles = [
 
 h2. A Sample Configuration
 
-What follows is a complete example configuration file. I hope it helps you.
+What follows is a complete example configuration from @grails-app/conf/Config.groovy@.
 
 {code}
-/ use this to simulate a shibboleth environment when your app is running in
-// development mode.
 
 // Used by Controllers
 grails.plugins.springsecurity.shibboleth.loginUrl = '/Shibboleth.sso/Login?target={0}'
@@ -177,8 +175,5 @@ grails.plugins.springsecurity.shibboleth.identityProvider.roles = [
 grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = [
     'ROLE_AUTH_METHOD_STANDARD': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
     'ROLE_IP_UMN_DEPT': ['160.94.111.0/25', '128.101.11.222/25', '134.84.111.222/26'] ]
-
 {code}
-
-
 

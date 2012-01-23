@@ -1,6 +1,6 @@
 h1. Troubleshooting your install
 
-Most of the problems surrounding getting your application working with this plugin are attributed to the "Shibboleth SP > mod_shib > Apache > mod_jk > Tomcat" stack.
+Most of the time, problems surrounding getting your application working with this plugin are attributed to the "Shibboleth SP > mod_shib > Apache > mod_jk > Tomcat" stack.
 
 h2. A demo application
 
@@ -12,7 +12,7 @@ You can get the application from [github|http://github.com/aaronzirbes/grails-sh
 git clone git@github.com:aaronzirbes/grails-shibboleth-demo.git
 {code}
 
-You can build it by running 
+You can build it by running:
 {code}
 grails war shibdemo
 {code}
@@ -32,13 +32,30 @@ Useful log files include
 * /var/log/apache/*.log
 * /var/log/syslog
 
+h3. Grails Loggging
+
+You can enable debug level logging in grails by adding the following to your @grails-app/conf/Config.groovy@ file
+{code}
+log4j = {
+	...
+    debug  'edu.umn.shibboleth.sp'
+	...
+}
+{code}
+Other logging packages that may be of interest are
+{code}
+org.springframework.security.ldap
+org.codehaus.groovy.grails.plugins.springsecurity.ldap
+{code}
+
 h2. Other languages
 
 Sometimes it's helpful to write a simple script in another language to see if apache can see the attributes exposed from shibboleth.  Anything will work really.  PHP, Python, Perl, Ruby, etc...
 
-h2. Back to the Documentation
-
-Often reviewing the systems installation and configuration documentation can help you diagnose quite a few problems.
+Usually the following PHP script (@index.php@) is sufficient to see all the shibboleth attributes.
+{code}
+<? php phpinfo(); ?>
+{code}
 
 h2. Check the resources
 
