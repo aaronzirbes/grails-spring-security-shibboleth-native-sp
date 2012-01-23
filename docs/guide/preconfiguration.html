@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Pre-configuration 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>4</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p>Hooking spring security to the Shibboleth Native SP through Apache</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Pre-configuration - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Aaron J. Zirbes</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="preconfiguration">2 Pre-configuration</h1>
+<h1>External Prerequisites</h1><p class="paragraph"/>You will need to have the following components in-place and functioning before you can successfully use this plugin.<p class="paragraph"/>Those components are
+<ul class="star">
+<li>Apache</li>
+<ul class="star">
+<li>installed and configured with SSL certificates and listening on port 443</li>
+</ul>
+<li>Shibboleth Native SP</li>
+<ul class="star">
+<li>Installed, and configured to use at least one IdP to authenticate against.</li>
+</ul>
+<li>mod_shib</li>
+<ul class="star">
+<li>Installed and configured so all of your web applications pass through the Shibboleth SP before apache passes the request on to your servlet container</li>
+</ul>
+<li>mod_jk</li>
+<ul class="star">
+<li>Installed and configured to pass the required URLs to your servlet container.  This also needs to be configured to expose all of the attributes you need to the servlet container.</li>
+</ul>
+<li>Tomcat (or some other servlet container)</li>
+<ul class="star">
+<li>Installed and configured to use the authentication passed to is by Apache</li>
+</ul>
+<li>Your application, compiled and deployed as a WAR</li>
+</ul><p class="paragraph"/>Reference configuration instructions for an Ubuntu based setup are available <a href="../ref/Httpswikiumnedu Main Tomcat6 Server On Ubuntu Server1004 LTS/here.html" class="https://wiki.umn.edu/Main/Tomcat6ServerOnUbuntuServer10_04LTS">here</a>.<p class="paragraph"/>More background information is available on the <a href="../ref/Httpswikishibbolethnetconfluencedisplay SHIB 2 Native SPJ ava Install/Internet2 Shibboleth Wiki.html" class="https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPJavaInstall">Internet2 Shibboleth Wiki</a>.
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copyright (c) 2012 Aaron J. Zirbes
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

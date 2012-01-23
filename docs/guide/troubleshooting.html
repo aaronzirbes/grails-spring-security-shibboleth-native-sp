@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>5 Troubleshooting 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>4</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p>Hooking spring security to the Shibboleth Native SP through Apache</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/configuration.html">&lt;&lt; <strong>4</strong><span>Configuration</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>5 Troubleshooting - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Aaron J. Zirbes</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="troubleshooting">5 Troubleshooting</h1>
+<h1>Troubleshooting your install</h1><p class="paragraph"/>Most of the time, problems surrounding getting your application working with this plugin are attributed to the "Shibboleth SP &#62; mod_shib &#62; Apache &#62; mod_jk &#62; Tomcat" stack.<p class="paragraph"/><h2>A demo application</h2><p class="paragraph"/>To help you see what your servlet container can see and help you diagnose problems, I have created a shibboleth-demo application that you can compile and deploy.  It will give you a pretty good view of what is going on within your servlet container.<p class="paragraph"/>You can get the application from <a href="http://github.com/aaronzirbes/grails-shibboleth-demo" target="blank">github</a>.  The command to clone it to your local machine is:<p class="paragraph"/><div class="code"><pre>git clone git@github.com:aaronzirbes/grails&#45;shibboleth&#45;demo.git</pre></div><p class="paragraph"/>You can build it by running:
+<div class="code"><pre>grails war shibdemo</pre></div><p class="paragraph"/>...and then deploy it to your shibboleth aware servelt container (tomcat).<p class="paragraph"/><h2>Configuration of exposed attributes</h2><p class="paragraph"/>If you've deployed the demo application, you can see all of the exposed attributes from your server.  You should double-check these to make sure that these attributes match what is set in your Config.groovy file.<p class="paragraph"/><h2>Log files</h2><p class="paragraph"/>Often you can check the log files to see what's going on with your server.
+Useful log files include
+<ul class="star">
+<li>/var/log/shibboleth/*.log</li>
+<li>/var/log/tomcat6/*.log</li>
+<li>/var/log/apache/*.log</li>
+<li>/var/log/syslog</li>
+</ul><p class="paragraph"/><h3>Grails Loggging</h3><p class="paragraph"/>You can enable debug level logging in grails by adding the following to your <code>grails-app/conf/Config.groovy</code> file
+<div class="code"><pre>log4j = &#123;
+	&#8230;
+    debug  'edu.umn.shibboleth.sp'
+	&#8230;
+&#125;</pre></div>
+Other logging packages that may be of interest are
+<div class="code"><pre>org.springframework.security.ldap
+org.codehaus.groovy.grails.plugins.springsecurity.ldap</pre></div><p class="paragraph"/><h2>Other languages</h2><p class="paragraph"/>Sometimes it's helpful to write a simple script in another language to see if apache can see the attributes exposed from shibboleth.  Anything will work really.  PHP, Python, Perl, Ruby, etc...<p class="paragraph"/>Usually the following PHP script (<code>index.php</code>) is sufficient to see all the shibboleth attributes.
+<div class="code"><pre>&#60;? php phpinfo(); ?&#62;</pre></div><p class="paragraph"/><h2>Check the resources</h2><p class="paragraph"/>If all else fails, check the Resources section, this has links to quite a bit of documentation.
+You can also try posting your question to the mailing lists.<p class="paragraph"/>If you've found a bug in the application, or have a feature you want that it doesn't support, please feel free to submit an issue via the GitHub page, and I'll see what I can do to help.
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/configuration.html">&lt;&lt; <strong>4</strong><span>Configuration</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copyright (c) 2012 Aaron J. Zirbes
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

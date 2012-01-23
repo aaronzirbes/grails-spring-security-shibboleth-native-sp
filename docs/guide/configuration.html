@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>4 Configuration 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>4</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p>Hooking spring security to the Shibboleth Native SP through Apache</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/installation.html">&lt;&lt; <strong>3</strong><span>Installation</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>4 Configuration - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Aaron J. Zirbes</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="configuration">4 Configuration</h1>
+<h1>Configuring the plugin</h1><p class="paragraph"/>The plugin has defauls that are set up to work out of the box with the Shibboleth IdP implementation used at the University of Minnesota.  If your IdP diverges from this setup, you'll have to change the settings in use by this plugin.<p class="paragraph"/>All of the configuration settings are set in your <code>grails-app/conf/Config.groovy</code> file.<p class="paragraph"/><h2>Configuring for Development</h2><p class="paragraph"/>As stated before, this plugin only works in production and/or test, and you should supplement this plugin with the spring-security-mock plugin, or some other authentication method for development.  The way to set up this configuration is as follows:<p class="paragraph"/><div class="code"><pre>environments &#123;
+    production &#123;
+	&#8230;
+        // Enable shibboleth, disable mock
+        grails.plugins.springsecurity.shibboleth.active = <span class="java&#45;keyword">true</span>
+        grails.plugins.springsecurity.mock.active = <span class="java&#45;keyword">false</span>
+	&#8230;
+    &#125;
+    development &#123;
+	&#8230;
+        // Enable Mock security <span class="java&#45;keyword">for</span> development mode
+        grails.plugins.springsecurity.shibboleth.active = <span class="java&#45;keyword">false</span>
+        grails.plugins.springsecurity.mock.active = <span class="java&#45;keyword">true</span>
+        grails.plugins.springsecurity.ipRestrictions = &#91; '/&#42;&#42;': &#91;'127.0.0.0/8', '::1/128'&#93; &#93;
+	&#8230;
+    &#125;
+    test &#123;
+	&#8230;
+        // Enable shibboleth, disable mock
+        grails.plugins.springsecurity.shibboleth.active = <span class="java&#45;keyword">true</span>
+        grails.plugins.springsecurity.mock.active = <span class="java&#45;keyword">false</span>
+	&#8230;
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h2>Configuring for your IdP</h2><p class="paragraph"/><blockquote class="note">
+Any property overrides must be specified in <code>grails-app/conf/Config.groovy</code> using the <code>grails.plugins.springsecurity</code> suffix, for example
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.principalUsername.attribute = 'EPPN'</pre></div>
+</blockquote><p class="paragraph"/>There are several configuration options for the Shibbolet Natibe SP plugin. In practice the defaults are fine for most deployments and only a few will need to be overridden.<p class="paragraph"/><table class="wiki-table" cellpadding="0" cellspacing="0" border="0"><tr><th><strong class="bold">Name</strong></th><th><strong class="bold">Default</strong></th><th><strong class="bold">Meaning</strong></th></tr><tr class="table-odd"><td>remoteAddress.roles</td><td><code>null</code></td><td>This is used to automatically apply roles to the user based only on their origin IP address.  This  takes a parameter of a Map of role names, followed by a list of IP subnets.  This is useful to assign roles to users based on if they are logged in from your intrantet, VPN, or wireless so you can restrict authentication methods depending on origin using nothing but security annotations.</td></tr><tr class="table-even"><td>shibboleth.authenticationInstant.attribute</td><td>'Shib-Authentication-Instant'</td><td>This is the attribute that is exposed by the IdP to tell the SP when the user was originally authenticated.</td></tr><tr class="table-odd"><td>shibboleth.authenticationMethod.attribute</td><td>'Shib-Authentication-Method'</td><td>This is the attribute that tells the application what method was used to authenticate the user.  This can be used by the ShibbolethUserDetailsService to assign specific roles based on authentication.</td></tr><tr class="table-even"><td>shibboleth.authenticationMethod.roles</td><td><code>null</code></td><td>This is a map of 'ROLE_NAME': 'auth-method-string'' that allows the ShibbolethUserDetailsService to load specific roles based on the method of authentication.  This is useful to differentiate between guest logins, standard logins, two-factor authentication and the like.</td></tr><tr class="table-odd"><td>shibboleth.email.attribute</td><td><code>null</code></td><td>The name of the attribute to use for the <code>email</code> address in the UserDetails object</td></tr><tr class="table-even"><td>shibboleth.extraAttributes</td><td><code>null</code></td><td>This is a list of any extra attributes you want loaded into the ShibbolethAuthenticationToken that will be exposed via the Spring Secuirity services and tags for use in your application.</td></tr><tr class="table-odd"><td>shibboleth.fullName.attribute</td><td><code>null</code></td><td>The name of the attribute to use for the <code>fullName</code> in the UserDetails object</td></tr><tr class="table-even"><td>shibboleth.identityProvider.attribute</td><td>'Shib-Identity-Provider'</td><td>This is the attribute that tells the application which IdP was used to authenticate the user.</td></tr><tr class="table-odd"><td>shibboleth.loginUrl</td><td>'/Shibboleth.sso/Login?target={0}'</td><td>The URL used by the Shibboleth Native SP to log users in.  The parameter <code>{0}</code> is replaced by the AuthenticationFilter URL.  You shouldn't need to modify this at all.</td></tr><tr class="table-even"><td>shibboleth.logoutUrl</td><td>'/Shibboleth.sso/Logout'</td><td>This is the default logout re-direct URL.  This will log the user out of the application in addition to logging out of the local Shibboleth SP instance.</td></tr><tr class="table-odd"><td>shibboleth.principalUsername.attribute</td><td>'EPPN'</td><td>This is the name of the principal attribute, usually the same as the username.  This is pretty standard, and shouldn't need modification.</td></tr><tr class="table-even"><td>shibboleth.roles.attribute</td><td><code>null</code></td><td>This is the attribute exposed by the IdP that contains any roles you wish to use in your application.  Typically these are filled in by grouper, or LDAP, or Active Directory.</td></tr><tr class="table-odd"><td>shibboleth.roles.loadFromUserDetailsService</td><td><code>false</code></td><td>Whether or not to load additional roles from the <code>userDetailService</code> bean.  The default <code>userDetailService</code> in spring-security-core is the DAO (GORM) User Details Service.</td></tr><tr class="table-even"><td>shibboleth.roles.prefix</td><td>'SHIB_'</td><td>This is the prefix assigned to all of the roles pulles from the shibboleth roles attribute.  This helps prevent role name collisions with other roles used.</td></tr><tr class="table-odd"><td>shibboleth.roles.separator</td><td>','</td><td>This is the delimeter that separates the role names in the roles attribute</td></tr><tr class="table-even"><td>shibboleth.useShibbolethUserDetails</td><td><code>true</code></td><td>Whether or not to use the Shibboleth User Details Service, or a different <code>UserDetailsService</code>.  If set to <code>false</code> then the plugin will load the user details from what ever UserDetailsService is set.  The default in spring-security-core is the DAO (GORM) UserDetailsService.</td></tr><tr class="table-odd"><td>shibboleth.username.attribute</td><td>'EPPN'</td><td>The name of the attribute to use for the username</td></tr><tr class="table-even"><td>shibboleth.username.stripAtDomain</td><td><code>false</code></td><td>Remove the '@domain.com' from the username attribute, commonly found in an EPPN if you don't wish to use it.  This breaks support for federated applications.</td></tr></table><p class="paragraph"/><blockquote class="note">
+Configuration settings from spring-security-ldap that affect the behavior of this plugin
+</blockquote><p class="paragraph"/>If all three of these settings are configured and enabled, then the Shibboleth plugin will attempt to load
+roles from LDAP rather than from the <code>shibboleth.roles.attribute</code> configuration setting.<p class="paragraph"/><table class="wiki-table" cellpadding="0" cellspacing="0" border="0"><tr><th><strong class="bold">Name</strong></th><th><strong class="bold">Default</strong></th><th><strong class="bold">Meaning</strong></th></tr><tr class="table-odd"><td>ldap.active</td><td><code>true</code></td><td>this must be set to true for spring-security-shibboleth to load roles from LDAP</td></tr><tr class="table-even"><td>ldap.authorities.retrieveGroupRoles</td><td><code>true</code></td><td>this must be set to true for spring-security-shibboleth to load roles from LDAP</td></tr><tr class="table-odd"><td>ldap.usernameMapper.userDnBase</td><td>none, must be set</td><td>this must be set to true for spring-security-shibboleth to load roles from LDAP.  This will be used to build the userDn that will be used to search LDAP for roles associated with the user.  The full DN will be equivalent to "cn=${username},${userDnBase}"</td></tr></table><p class="paragraph"/><h2>Using a different User Details Service</h2><p class="paragraph"/>You can use any User Details Service with the Shibboleth plugin as long as it implements <a href="../ref/Httpsgithubcomgrailspluginsgrailsspringsecuritycoreblobmastersrcjavaorgcodehausgroovygrailspluginsspringsecurity Grails User Details Servicejava/GrailsUserDetailsService.html" class="https://github.com/grails-plugins/grails-spring-security-core/blob/master/src/java/org/codehaus/groovy/grails/plugins/springsecurity/GrailsUserDetailsService.java">GrailsUserDetailsService</a>. This is accomplished by setting the <code>userDetailsService</code> in your <code>grails-app/conf/spring/resources.groovy</code> file.<p class="paragraph"/>For example:<p class="paragraph"/><div class="code"><pre>beans = &#123;
+   userDetailsService(com.mycompany.myapp.MyUserDetailsService)
+&#125;</pre></div><p class="paragraph"/>
+<h2>Configuring injected roles for your app</h2>
+The following examples show how to use the roles attributes above to ensure that roles assigned to your authenticated users based on your configuration.<p class="paragraph"/>Sets the roles attribute to pull from grouper
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.roles.attribute = 'Shib&#45;Grouper&#45;Roles'</pre></div><p class="paragraph"/>Sets the separator for the grouper attribute to a comma
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.roles.separator = ','</pre></div><p class="paragraph"/>Tells the plugin to prefix all roles with 'SHIB_', for example, 'students' would become 'ROLE_SHIB_students'
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.roles.prefix = 'SHIB_'</pre></div><p class="paragraph"/>This maps IdPs to authentication methods to allow for security annotations
+for securing based on originating IdP server. In this example, the U of MN,
+and Northwestern University out of Chicago are assigned different roles.
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.identityProvider.roles = &#91;
+    'ROLE_IDP_UMN': 'https://idp2.shib.umn.edu/idp/shibboleth',
+    'ROLE_IDP_NORTHWESTERN_U': 'https://fed.it.northwestern.edu/shibboleth&#45;idp/SSO' &#93;</pre></div><p class="paragraph"/>This maps roles to authentication methods to allow for security annotations
+for securing based on method, this example is to assigne a role for Two-Factor Auth (M-Key)
+<div class="code"><pre>grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = &#91;
+    'ROLE_AUTH_METHOD_STANDARD': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
+    'ROLE_AUTH_METHOD_UMN_MKEY': 'https://www.umn.edu/shibboleth/classes/authncontext/mkey' &#93;</pre></div><p class="paragraph"/>Allow location based roles.  In this example,
+the first role assigns the role VPN from IP addresses coming from 
+the VPN pool.  The second tells the app the user is on campus, the 
+last tells the app if the user is coming in from within the department.
+<div class="code"><pre>grails.plugins.springsecurity.remoteAddress.roles = &#91;
+    'ROLE_IP_UMN_VPN': &#91;'134.84.0.0/23'&#93;,
+    'ROLE_IP_UMN_CAMPUS': &#91;'160.94.0.0/16', '128.101.0.0/16', '134.84.0.0/16'&#93;,
+    'ROLE_IP_UMN_DEPT': &#91;'160.94.111.0/25', '128.101.11.222/25', '134.84.111.222/26'&#93; &#93;</pre></div><p class="paragraph"/><h2>A Sample Configuration</h2><p class="paragraph"/>What follows is a complete example configuration from <code>grails-app/conf/Config.groovy</code>.<p class="paragraph"/><div class="code"><pre>// Used by Controllers
+grails.plugins.springsecurity.shibboleth.loginUrl = '/Shibboleth.sso/Login?target=&#123;0&#125;'
+grails.plugins.springsecurity.shibboleth.logoutUrl = '/Shibboleth.sso/Logout'<p class="paragraph"/>// Token Attributes
+grails.plugins.springsecurity.shibboleth.principalUsername.attribute = 'EPPN'
+grails.plugins.springsecurity.shibboleth.authenticationMethod.attribute = 'Shib&#45;AuthnContext&#45;Method'
+grails.plugins.springsecurity.shibboleth.identityProvider.attribute = 'Shib&#45;Identity&#45;Provider'
+grails.plugins.springsecurity.shibboleth.authenticationInstant.attribute = 'Shib&#45;Authentication&#45;Instant'<p class="paragraph"/>// Used by Authentication Provider
+grails.plugins.springsecurity.shibboleth.roles.attribute = <span class="java&#45;keyword">null</span>
+grails.plugins.springsecurity.shibboleth.roles.separator = ','
+grails.plugins.springsecurity.shibboleth.roles.prefix = 'SHIB_'
+grails.plugins.springsecurity.shibboleth.extraAttributes = &#91; 'uid', 'Shib&#45;Session&#45;Index', 'Shib&#45;Session&#45;ID', 'Shib&#45;AuthnContext&#45;<span class="java&#45;object">Class</span>', 'Shib&#45;Application&#45;ID' &#93;<p class="paragraph"/>// This maps IdPs to authentication methods to allow <span class="java&#45;keyword">for</span> security annotations
+// <span class="java&#45;keyword">for</span> securing based on originating IdP server
+grails.plugins.springsecurity.shibboleth.identityProvider.roles = &#91;
+    'ROLE_IDP_UMN': 'https://idp2.shib.umn.edu/idp/shibboleth',
+    'ROLE_IDP_NORTHWESTERN': 'https://fed.it.northwestern.edu/shibboleth&#45;idp/SSO',
+    'ROLE_IDP_UMNTEST': 'https://idp&#45;test.shib.umn.edu/idp/shibboleth' &#93;<p class="paragraph"/>// This maps roles to authentication methods to allow <span class="java&#45;keyword">for</span> security annotations
+// <span class="java&#45;keyword">for</span> securing based on method
+grails.plugins.springsecurity.shibboleth.authenticationMethod.roles = &#91;
+    'ROLE_AUTH_METHOD_STANDARD': 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
+    'ROLE_IP_UMN_DEPT': &#91;'160.94.111.0/25', '128.101.11.222/25', '134.84.111.222/26'&#93; &#93;</pre></div><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/installation.html">&lt;&lt; <strong>3</strong><span>Installation</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copyright (c) 2012 Aaron J. Zirbes
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>1 Introduction 1.0.0</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/installation.html"><strong>3</strong><span>Installation</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/configuration.html"><strong>4</strong><span>Configuration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/troubleshooting.html"><strong>5</strong><span>Troubleshooting</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/resources.html"><strong>6</strong><span>Resources</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p>Hooking spring security to the Shibboleth Native SP through Apache</p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>1 Introduction - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Aaron J. Zirbes</p>
+
+                    <p><strong>Version:</strong> 1.0.0</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#history"><strong>1.1</strong><span>History</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="introduction">1 Introduction</h1>
+The Shibboleth Native SP adds support for attributes exposed by a Native Shibboleth SP through Apache on up to the Java servlet container.<p class="paragraph"/>This plugin doesn't implement the Shibboleth SP inside the java container, but uses the recommeneded Native SP provided as a server daemon and an apache module. The ensures that security vulnarabilities specific to the SP are updated in a timely fashion. This plugin let's the shibd daemon, Apache, and Tomcat do most of the heavy lifting. By the time the http request gets to the application, the only thing this plug-in does is look for the exposed attributes expected from a Shibboleth Native SP implementation and validate that they are what was expected.<p class="paragraph"/>Because of the nature of the Shibboleth Native SP, this plugin will only work when deployed to a shibboleth-aware servlet container. The side effect of this is that authentication via shibboleth is not available when running through the grails command line. You can only effectively use this plugin when it is deployed as a WAR to your production or staging server. To help you run your application in development mode, the <code>spring-security-mock</code> plugin is recommended.<p class="paragraph"/>Before you can use this plugin, you'll need to have a working Shibboleth SP installation that is successfully communicating with Apache. Apache must be fronting your servlet container (Tomcat is preferred, as it is a known-good implementation), and your servlet container must be able to receive the attributes exposed by apache. This is typically done via setting the <code>useContainerSecurityW option to </code>false@ in your servlet container.<p class="paragraph"/>
+
+
+
+<h2 id="history">1.1 History</h2>
+<h1>History</h1>
+<ul class="star">
+<li>Pre-release versions up to 0.9.8</li>
+<ul class="star">
+<li>January 10th, 2012</li>
+</ul>
+<li>Initial public release 0.9.9</li>
+<ul class="star">
+<li>January 12th, 2012</li>
+</ul>
+<li>Version 1.0.0</li>
+<ul class="star">
+<li>January 20th, 2012</li>
+</ul></ul><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/preconfiguration.html"><strong>2</strong><span>Pre-configuration</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    Copyright (c) 2012 Aaron J. Zirbes
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
