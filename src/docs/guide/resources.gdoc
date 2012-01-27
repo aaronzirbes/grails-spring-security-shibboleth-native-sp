@@ -4,20 +4,20 @@ The following are resources that I have found helpful when setting up Shibboleth
 
 h2. Web Links
 
-* Shibboleth SP
-* mod_shib
-* Apache
-* mod_jk
-* Tomcat
-* Spring Security
-* Grails Spring Security Core Plugin
-* Spring Security Mock Plugin
+* [Shibboleth SP|https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPConfiguration]
+** [Ubuntu specific SP install guide|https://wiki.umn.edu/Main/Tomcat6ServerOnUbuntuServer10_04LTS]
+* [mod_shib|https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig]
+* [Apache|http://httpd.apache.org/docs/]
+* [mod_jk|http://tomcat.apache.org/connectors-doc/]
+* [Tomcat|http://tomcat.apache.org/tomcat-7.0-doc/index.html]
+* [Spring Security|http://static.springsource.org/spring-security/site/reference.html]
+* [Grails Spring Security Core Plugin|http://grails-plugins.github.com/grails-spring-security-core/docs/manual/]
+* [Spring Security Mock Plugin|http://aaronzirbes.github.com/grails-spring-security-mock/]
 
 h2. Mailing Lists
-* Grails Users
-* Groovy Users of Minnesota
+* [Grails Users|http://grails.1312388.n4.nabble.com/]
+** [Groovy Users of Minnesota|http://groups.google.com/group/groovymn]
 
 h2. User Groups
-* Groovy Users of Minnesota
-* GR8 in the US
-* Groovy and Grails Exchange
+* [Many More|http://grails.org/User+Groups]
+** [Groovy Users of Minnesota|http://groovy.mn/]

@@ -9,3 +9,4 @@ target-eclipse/
 target/
 web-app/
 CodeNarcReport.html
+cobertura.*
