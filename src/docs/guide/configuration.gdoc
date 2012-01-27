@@ -66,6 +66,7 @@ shibboleth.roles.separator | ',' | This is the delimeter that separates the role
 shibboleth.useShibbolethUserDetails | @true@ | Whether or not to use the Shibboleth User Details Service, or a different @UserDetailsService@.  If set to @false@ then the plugin will load the user details from what ever UserDetailsService is set.  The default in spring-security-core is the DAO (GORM) UserDetailsService.
 shibboleth.username.attribute | 'EPPN' | The name of the attribute to use for the username
 shibboleth.username.stripAtDomain | @false@ | Remove the '@domain.com' from the username attribute, commonly found in an EPPN if you don't wish to use it.  This breaks support for federated applications.
+userLookup.enabled | @false@ | Whether or not Spring Security Core will attempt to load the user details from a GORM domain class or not when getCurrentUser() or getAuthenticatedUser() is called. This must be false if you are using the @ShibbolethUserDetailsService@, which is the default.
 {table}
 
 {note}

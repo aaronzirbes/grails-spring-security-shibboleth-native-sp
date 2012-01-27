@@ -54,4 +54,7 @@ security {
 
 	// change logout URL
 	logout.afterLogoutUrl = '/Shibboleth.sso/Logout'
+
+	// Disable DAO loading of UserDetails
+	userLookup.enabled = false
 }
