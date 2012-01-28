@@ -2,6 +2,7 @@ package edu.umn.shibboleth.sp
 
 import static org.junit.Assert.*
 
+import java.net.URLEncoder
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.authentication.InsufficientAuthenticationException
@@ -35,7 +36,7 @@ class ShibbolethAuthenticationEntryPointTests {
 		entryPoint.commence(request, response, authenticationException)
 	}
 
-    void testRedirect() {
+    void testRedirect() throws UnsupportedEncodingException {
 		def loginUrl = '/login/TARGET={0}'
         def entryPoint = new ShibbolethAuthenticationEntryPoint(loginUrl: loginUrl)
 		entryPoint.afterPropertiesSet()
@@ -45,8 +46,10 @@ class ShibbolethAuthenticationEntryPointTests {
 		def authenticationException = new InsufficientAuthenticationException('TEST')
 
 		entryPoint.commence(request, response, authenticationException)
+		def urlTarget = URLEncoder.encode("http://localhost:80/j_spring_shibboleth_native_sp_security_check", "UTF-8")
+		def url = "/login/TARGET=${urlTarget}".toString()
 
-		assertEquals "/login/TARGET=%2Fj_spring_shibboleth_native_sp_security_check", response.redirectedUrl
+		assertEquals url, response.redirectedUrl
 
     }
 }
