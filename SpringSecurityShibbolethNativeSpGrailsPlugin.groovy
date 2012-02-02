@@ -10,7 +10,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.ldap.GrailsLdapAuthorit
 
 class SpringSecurityShibbolethNativeSpGrailsPlugin {
     // the plugin version
-    def version = "1.0.1"
+    def version = "1.0.2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.0 > *"
     // the other plugins this plugin depends on
@@ -144,7 +144,7 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
 		}
 
 		SpringSecurityUtils.registerProvider 'shibbolethAuthenticationProvider'
-		SpringSecurityUtils.registerFilter 'shibbolethLogoutFilter', SecurityFilterPosition.LOGOUT_FILTER.getOrder() + 10
+		//SpringSecurityUtils.registerFilter 'shibbolethLogoutFilter', SecurityFilterPosition.LOGOUT_FILTER.getOrder() + 10
 		SpringSecurityUtils.registerFilter 'shibbolethAuthenticationFilter', SecurityFilterPosition.CAS_FILTER.getOrder() - 10
 
 		println '...finished configuring Spring Security Shibboleth Native SP'
