@@ -33,7 +33,11 @@ class SpringSecurityShibbolethNativeSpGrailsPlugin {
     def description = "Shibboleth Naitive SP support for the Spring Security grails plugin."
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/spring-security-shibboleth-native-sp"
+    def documentation = "http://aaronzirbes.github.com/grails-spring-security-shibboleth-native-sp/"
+	def license = "GPLv3"
+	def developers = [ [ name: "Aaron J. Zirbes", email: "aaron.zirbes@gmail.com" ] ]
+	def issueManagement = [ system: "GitHub", url: "https://github.com/aaronzirbes/grails-spring-security-shibboleth-native-sp/issues" ]
+	def scm = [ url: "https://github.com/aaronzirbes/grails-spring-security-shibboleth-native-sp" ]
 
     def doWithSpring = {
         // plug in shibboleth artifacts in to spring security

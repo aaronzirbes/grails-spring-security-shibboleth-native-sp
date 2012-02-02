@@ -46,7 +46,19 @@ class ShibbolethAuthenticationEntryPoint implements AuthenticationEntryPoint, In
 	}
 
 	private String createRedirectUrl(final HttpServletRequest request) {
-		String uri = request.getContextPath() + this.securityCheckUri;
+		// Build the full redirect URL
+		String server = request.getRequestURL().toString();
+		// https:// == 7 characters, start looking for the trailing slash after that.
+		if (server.length() > 8) {
+			int endOf = server.indexOf('/', 8);
+			if (endOf > -1) {
+				server = server.substring(0, endOf);
+			}
+		} else {
+			 // fallback to realative URL
+			 server = "";
+		}
+		String uri = server + request.getContextPath() + this.securityCheckUri;
 		String returnUrl = uri;
 		try {
 			returnUrl = URLEncoder.encode(uri.toString(), utfEncoding);
